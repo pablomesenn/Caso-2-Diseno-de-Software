@@ -3,6 +3,13 @@
 Members: Pablo Mesén, Alonso Duran, Ana Hernandez, Jesus Valverde
 
 ## Description: Write a brief description of the system, highlighting its strengths"
+The system is an AI-powered task recording and assistance platform designed to enhance real-time guidance within applications. Users can record tasks through voice commands and on-screen actions, creating a structured knowledge base. The platform leverages AI to analyze and replicate workflows, offering real-time assistance when users perform similar tasks.
+
+Strengths:
+Cross-Platform Compatibility – Supports Windows, macOS, iOS, Android, and web-based interactions.
+AI-Driven Workflow Automation – Uses machine learning to extract key steps and optimize task execution.
+Scalable Cloud Infrastructure – Handles a growing user base efficiently with cloud-based storage and processing.
+Flexible Monetization Model – Offers free trials and scalable subscription plans for businesses.
 
 ## Stack: write down the final stack to be use decided for the group"
 
