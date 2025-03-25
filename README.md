@@ -1,6 +1,6 @@
-# System name - set your own name
+# Zathura - personal IA and voice recognition assitant
 
-Members: Pablo Mesen, Alonso Duran, Ana Hernandez, Jesus Valverde
+Members: Pablo Mesén, Alonso Duran, Ana Hernandez, Jesus Valverde
 
 ## Description: Write a brief description of the system, highlighting its strengths"
 
@@ -8,14 +8,87 @@ Members: Pablo Mesen, Alonso Duran, Ana Hernandez, Jesus Valverde
 
 ## Frontend design specifications"
 
-### Authentication platform", Conduct research to determine which service platform you will use for authentication, ensuring that it offers at least
+### Authentication platform
 
-a) login y password
+The Authentication platform our team decide to use for the purpose of the current case was "Firebase Authentication". This platform is a service that is a part of the catalog services that Firebase offers. Firebase is a mobile and web development platform created by Google, and it provides a comprehensive suite of tools to simplify authentication and user management. We descibre the multiple reasons why we think this tool is suficcient for the needed to complete task in the following point: 
 
-b) login y password automatic screen generation or SDK for screen generation
+a) Login and password: 
 
-c) compatible with your FE programming language
+Firebase Authentication supports authentication using email and password.
 
-d) access by API available
+b) Login and password automatic screen generation or SDK for screen generation: 
 
-e) MFA and a sandbox for testing purpose
+Firebase provides libraries and SDKs (like FirebaseUI) that automatically generate login screens in a customizable way. This makes integration into mobile and web applications easier without needing to create the screens from scratch.
+
+c) Compatible with your FE programming language: 
+
+Firebase Authentication is compatible with multiple frontend technologies, including:
+
+- Web (JavaScript/TypeScript)
+
+- Android (Java/Kotlin)
+
+- iOS (Swift/Objective-C)
+
+- Modern frameworks like React, Angular, and Vue can also easily use Firebase.
+
+d) Access by API available: 
+
+Firebase Authentication provides access through a REST API, allowing you to manage users, sign in, sign out, and perform other authentication processes from any client or server compatible with HTTP.
+
+e) MFA and a sandbox for testing purposes: 
+
+Firebase Authentication supports Multi-Factor Authentication (MFA) using verifications like SMS or app-based authentication (such as Google Authenticator).
+Additionally, you can perform tests in a development environment or use the Firebase Emulator Suite, which includes a testing environment for authentication without affecting production data.
+
+### Demo code devolpment documentation
+
+#### Firebase Authentication platform implementation
+
+The authentication system is built using Firebase’s SDK and React components, structured to handle user flows seamlessly. Here’s how the main parts of the code were structured for the implementation to work:  
+
+##### Firebase.js
+
+The Firebase setup begins by initializing a connection to the backend using credentials unique to the project. The firebaseConfig object contains API keys and identifiers (e.g., apiKey, projectId) provided by Firebase Console, ensuring the app communicates with the correct Firebase project. The initializeApp function establishes this connection, and getAuth creates an authentication instance (auth) that is exported for use across components. This centralizes Firebase authentication logic and avoids redundant initializations.
+
+![image](https://github.com/user-attachments/assets/433655be-9a3d-4b4d-ba8e-82222f03deeb)
+
+(Image for illustrative purpose, empty information)
+
+With this in mind all that is left is to ensure correct communication with the authentication service we just initialize and the frontend of our project. By combining Firebase’s authentication methods with React’s state management and routing, the code creates a cohesive system. Firebase handles backend tasks (credential validation, session persistence), while React components manage UI, state, and user interactions. This separation of concerns ensures scalability—additional features (e.g., social logins) can be added without disrupting core logic.
+
+#### FrontEnd design and customizablity 
+
+##### Completly independent UI
+
+If you are willing to spend the time and thinking it needs, it is viable with Firebase Authentication that you build the authentication UI from scratch using React components (in this case React components to be consistent with the technologies stack stablished earlier), giving you full control over the design and user experience. In this approach Firebase only handles the backend logic (user creation, credential validation, session management).
+
+###### Pros
+
+- Full Creative Control: Match your app’s branding perfectly.
+
+- Flexible UX: Add animations, multi-step forms, or password strength indicators.
+
+- No Dependencies: Avoid third-party UI libraries.
+
+###### Cons
+
+- Development Time: Requires building all UI components.
+
+##### Using FirebaseUI Resources
+
+FirebaseUI is a library from Firebase that provides pre-built, customizable authentication components, making it easier to integrate sign-in flows into applications. It supports multiple authentication methods, including email/password, phone authentication, and third-party providers like Google and Facebook. While it is ideal for rapid development due to its simplicity and ease of use, it offers less design flexibility compared to fully custom authentication implementations, still being customizable.
+
+###### Pros
+
+- Rapid Setup: Pre-built forms for email, Google, Facebook, etc.
+
+- Consistent Behavior: Firebase manages error messages and loading states.
+
+- Mobile-Friendly: Responsive design out-of-the-box.
+
+###### Cons
+
+- Limited Customization: Hard to match unique branding.
+
+- CSS Conflicts: Requires !important overrides for styling.
