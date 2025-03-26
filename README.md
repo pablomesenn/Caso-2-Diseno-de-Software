@@ -1,4 +1,4 @@
-# Zathura - personal IA and voice recognition assitant
+# Zathura - personal AI and voice recognition assistant
 
 Members: Pablo Mesén, Alonso Duran, Ana Hernandez, Jesus Valverde
 
