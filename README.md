@@ -3,9 +3,11 @@
 Members: Pablo Mesén, Alonso Duran, Ana Hernández Muñoz, Jesus Valverde
 
 ## Description: Write a brief description of the system, highlighting its strengths"
+
 The system is an AI-powered task recording and assistance platform designed to enhance real-time guidance within applications. Users can record tasks through voice commands and on-screen actions, creating a structured knowledge base. The platform leverages AI to analyze and replicate workflows, offering real-time assistance when users perform similar tasks.
 
 Strengths:
+
 - Cross-Platform Compatibility – Supports Windows, macOS, iOS, Android, and web-based interactions.
 - AI-Driven Workflow Automation – Uses machine learning to extract key steps and optimize task execution.
 - Scalable Cloud Infrastructure – Handles a growing user base efficiently with cloud-based storage and processing.
@@ -17,17 +19,17 @@ Strengths:
 
 ### Authentication platform
 
-The Authentication platform our team decide to use for the purpose of the current case was "Firebase Authentication". This platform is a service that is a part of the catalog services that Firebase offers. Firebase is a mobile and web development platform created by Google, and it provides a comprehensive suite of tools to simplify authentication and user management. We descibre the multiple reasons why we think this tool is suficcient for the needed to complete task in the following point: 
+The Authentication platform our team decide to use for the purpose of the current case was "Firebase Authentication". This platform is a service that is a part of the catalog services that Firebase offers. Firebase is a mobile and web development platform created by Google, and it provides a comprehensive suite of tools to simplify authentication and user management. We descibre the multiple reasons why we think this tool is suficcient for the needed to complete task in the following point:
 
-a) Login and password: 
+a) Login and password:
 
 Firebase Authentication supports authentication using email and password.
 
-b) Login and password automatic screen generation or SDK for screen generation: 
+b) Login and password automatic screen generation or SDK for screen generation:
 
 Firebase provides libraries and SDKs (like FirebaseUI) that automatically generate login screens in a customizable way. This makes integration into mobile and web applications easier without needing to create the screens from scratch.
 
-c) Compatible with your FE programming language: 
+c) Compatible with your FE programming language:
 
 Firebase Authentication is compatible with multiple frontend technologies, including:
 
@@ -39,11 +41,11 @@ Firebase Authentication is compatible with multiple frontend technologies, inclu
 
 - Modern frameworks like React, Angular, and Vue can also easily use Firebase.
 
-d) Access by API available: 
+d) Access by API available:
 
 Firebase Authentication provides access through a REST API, allowing you to manage users, sign in, sign out, and perform other authentication processes from any client or server compatible with HTTP.
 
-e) MFA and a sandbox for testing purposes: 
+e) MFA and a sandbox for testing purposes:
 
 Firebase Authentication supports Multi-Factor Authentication (MFA) using verifications like SMS or app-based authentication (such as Google Authenticator).
 Additionally, you can perform tests in a development environment or use the Firebase Emulator Suite, which includes a testing environment for authentication without affecting production data.
@@ -64,7 +66,7 @@ The Firebase setup begins by initializing a connection to the backend using cred
 
 With this in mind all that is left is to ensure correct communication with the authentication service we just initialize and the frontend of our project. By combining Firebase’s authentication methods with React’s state management and routing, the code creates a cohesive system. Firebase handles backend tasks (credential validation, session persistence), while React components manage UI, state, and user interactions. This separation of concerns ensures scalability—additional features (e.g., social logins) can be added without disrupting core logic.
 
-#### FrontEnd design and customizablity 
+#### FrontEnd design and customizablity
 
 ##### Completly independent UI
 
@@ -99,3 +101,29 @@ FirebaseUI is a library from Firebase that provides pre-built, customizable auth
 - Limited Customization: Hard to match unique branding.
 
 - CSS Conflicts: Requires !important overrides for styling.
+
+### Client Architecture
+
+Architecture: N-layer
+
+Technology Stack:
+
+- Mobile Frontend: Flutter (Hybrid): Chosen for its background processing capabilities and consistent real-time assistance across Android and iOS.
+- Web Frontend: React (Likely Client-Side Rendering (CSR)) - Selected for performance and scalability, with the possibility of using Vite as the build tool.
+- Backend: Python (for AI), Node.js (for handling multiple connections and frontend communication), REST (API).
+- Database: PostgreSQL - Chosen for compatibility with other technologies.
+- AI Development: TensorFlow - For voice command processing and data flow generation.
+- Hosting: Firebase
+- CI/CD:  GitHub Actions - For automating integration and deployment.
+- QA: pytest, flutter test, React Testing Library, Appium - For comprehensive testing.
+Web App Rendering: Primarily Client-Side Rendering (CSR).
+Mobile Development: Hybrid (Flutter).
+
+Key Points:
+
+- The team has opted for an N-layer architecture.
+- Flutter is the chosen technology for mobile development.
+- React is selected for the web frontend, with Vite used as the build tool.
+- Python will handle the backend API endpoints and application logic.
+- Python will also be used for AI development.
+- Firebase will be used for hosting the application.
