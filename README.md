@@ -31,15 +31,13 @@ Firebase provides libraries and SDKs (like FirebaseUI) that automatically genera
 
 c) Compatible with your FE programming language:
 
-Firebase Authentication is compatible with multiple frontend technologies, including:
-
-- Web (JavaScript/TypeScript)
+Firebase Authentication is compatible with multiple frontend technologies, this includes includes our selected FrontEnd language JavaScript/TypeScript(using React framework) and Dart (using Flutter framework). In addition to this, Firebase also is compatible with:
 
 - Android (Java/Kotlin)
 
 - iOS (Swift/Objective-C)
 
-- Modern frameworks like React, Angular, and Vue can also easily use Firebase.
+- Other modern frameworks like Angular, and Vue can also easily use Firebase.
 
 d) Access by API available:
 
