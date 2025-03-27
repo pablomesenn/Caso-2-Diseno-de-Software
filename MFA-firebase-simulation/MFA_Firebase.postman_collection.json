@@ -1,0 +1,184 @@
+{
+	"info": {
+		"_postman_id": "1f6cf0b3-225d-40d3-8394-4da14b454f6f",
+		"name": "MFA_Firebase",
+		"description": "Simulation authentication with MFA, using Firebase API.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43444263"
+	},
+	"item": [
+		{
+			"name": "Verify user",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"requestType\": \"VERIFY_EMAIL\",\r\n    \"idToken\": \"eyJhbGciOiJSUzI1NiIsImtpZCI6IjMwYjIyMWFiNjU2MTdiY2Y4N2VlMGY4NDYyZjc0ZTM2NTIyY2EyZTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vemF0aHVyYS1kNWNiZSIsImF1ZCI6InphdGh1cmEtZDVjYmUiLCJhdXRoX3RpbWUiOjE3NDI4NzA3NDQsInVzZXJfaWQiOiJ2dHdaM25Xa09WWjNFZVFpY1VVMjlzRVJ4ZHMxIiwic3ViIjoidnR3WjNuV2tPVlozRWVRaWNVVTI5c0VSeGRzMSIsImlhdCI6MTc0Mjg3MDc0NCwiZXhwIjoxNzQyODc0MzQ0LCJlbWFpbCI6ImR1cmFuLm11bm96YWxvbnNvQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJkdXJhbi5tdW5vemFsb25zb0BnbWFpbC5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.24QM9ZDC7-SuPMumX4nsHPe98rJ4EGBmwVo4-eIhmJzGGJycPXn33Cvq1iyw5Bru8mn5xZ7fgcXrdEZG9ROW2wfvHpwPjTFBB6LhyplJI1cKtFzZxpj5XiuPECffydsNsAaHj0C7oVEnsTabOR7kfJMAvMDhtuoewFr_sLL3a0RHurpdzOF5mBjuB4WUb5dnaOzXNfKjWwupZdiYLM1celiMeqoJqVGg5Lgjj-Q-Zi5NEcRFEpBmU-glFp1XENZ4sbxwiWqlrcHCA4iszEAOCtgIP1v_YmVvIrdhrRSWRk6SpRpHmNxkwlXWYhzdYoMgFdGSpo6juOFWF1G04LWqWg\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyDHKFgXZCaXzr5jhg-x2eb3B65EORVtOOY\n",
+					"protocol": "https",
+					"host": [
+						"identitytoolkit",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v1",
+						"accounts:sendOobCode"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "AIzaSyDHKFgXZCaXzr5jhg-x2eb3B65EORVtOOY\n"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sign in with password",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"duran.munozalonso@gmail.com\",\r\n  \"password\": \"qwerty\",\r\n  \"returnSecureToken\": true\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDHKFgXZCaXzr5jhg-x2eb3B65EORVtOOY\n",
+					"protocol": "https",
+					"host": [
+						"identitytoolkit",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v1",
+						"accounts:signInWithPassword"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "AIzaSyDHKFgXZCaXzr5jhg-x2eb3B65EORVtOOY\n"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "MFA Verification Code",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"mfaPendingCredential\": \"AMzJoSl238TRhmPcBV5SK1jwg1PrNvmTaYkI1yAxtJZutEwvBzKY52_Lult_5TeUucWu9u6VBE3t9vGMmuMuptW0-k6RswIiBryXMBZOlvewdRBE4r8Ub4xL5ykNzEhyqBj0XvJL_L2DE5vzr5R2jhaRIQ2oYMS1m0ouFJkD_hwK9e_DyuQbBbw\",\r\n  \"mfaEnrollmentId\": \"54de7340-010a-498a-ad09-b1084878b294\",\r\n  \"phoneSignInInfo\": {}\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://identitytoolkit.googleapis.com/v2/accounts/mfaSignIn:start?key=AIzaSyDHKFgXZCaXzr5jhg-x2eb3B65EORVtOOY\n",
+					"protocol": "https",
+					"host": [
+						"identitytoolkit",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v2",
+						"accounts",
+						"mfaSignIn:start"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "AIzaSyDHKFgXZCaXzr5jhg-x2eb3B65EORVtOOY\n"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify the MFA Code",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"mfaPendingCredential\": \"AMzJoSl238TRhmPcBV5SK1jwg1PrNvmTaYkI1yAxtJZutEwvBzKY52_Lult_5TeUucWu9u6VBE3t9vGMmuMuptW0-k6RswIiBryXMBZOlvewdRBE4r8Ub4xL5ykNzEhyqBj0XvJL_L2DE5vzr5R2jhaRIQ2oYMS1m0ouFJkD_hwK9e_DyuQbBbw\",\r\n  \"phoneVerificationInfo\": {\r\n    \"sessionInfo\": \"AD8T5IteGorNTPo3H53OTJQwj1Qrk9Ls0YevkzQ0-3KJw890oFzXz1eX--9W06SEoE4Ih1rUnIKTgv2YJmxvu6fz3b3xHE0GFdFbwF_x2mGW7n5EqwrnWlmKyNgSjtg935v_CW8bysj7\",\r\n    \"code\": \"666666\"\r\n  }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://identitytoolkit.googleapis.com/v2/accounts/mfaSignIn:finalize?key=AIzaSyDHKFgXZCaXzr5jhg-x2eb3B65EORVtOOY\n",
+					"protocol": "https",
+					"host": [
+						"identitytoolkit",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v2",
+						"accounts",
+						"mfaSignIn:finalize"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "AIzaSyDHKFgXZCaXzr5jhg-x2eb3B65EORVtOOY\n"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

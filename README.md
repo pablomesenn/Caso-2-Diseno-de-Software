@@ -100,6 +100,85 @@ FirebaseUI is a library from Firebase that provides pre-built, customizable auth
 
 - CSS Conflicts: Requires !important overrides for styling.
 
+### Firebase API calls to simulate authentication with MFA
+
+This document describes the process of simulating authentication with Firebase Multi-Factor Authentication (MFA) using Postman. The simulation includes verifying the user, signing in with a password, triggering MFA, and verifying the MFA code.
+
+#### Postman Collection
+A Postman collection has been created to facilitate the API calls required for the simulation. You can find the collection at:
+
+[Postman Collection - MFA_Firebase](MFA-firebase-simulation\MFA_Firebase.postman_collection.json)
+
+#### Setup
+1. **Enable MFA in Firebase**
+   - Navigate to the Firebase console.
+   - Go to `Authentication > Sign-in method`.
+   - Enable SMS Multi-Factor Authentication.
+
+![Image](https://github.com/user-attachments/assets/fe334ca8-c852-4ced-a80d-6817feb20521)
+![Image](https://github.com/user-attachments/assets/bb536052-13e3-4eea-89b9-b72cffaff2c4)
+
+
+2. **Postman API Calls**
+   - All API calls require an API key and authentication token.
+   - Firebase requires an email verification step before proceeding.
+
+#### API Call Steps
+##### 1. Verify User (Email Verification)
+- **Endpoint:** `POST https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=YOUR_API_KEY`
+- **Request Body:**
+  ```json
+  {
+    "requestType": "VERIFY_EMAIL",
+    "idToken": "YOUR_ID_TOKEN"
+  }
+  ```
+
+##### 2. Sign in with Password
+- **Endpoint:** `POST https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=YOUR_API_KEY`
+- **Request Body:**
+  ```json
+  {
+    "email": "your-email@gmail.com",
+    "password": "your-password",
+    "returnSecureToken": true
+  }
+  ```
+- **Response:** Contains `mfaPendingCredential` and `mfaEnrollmentID`.
+![Image](https://github.com/user-attachments/assets/13da4fff-c339-41ff-83d3-7a336859712e)
+
+##### 3. Request MFA Verification Code
+- **Endpoint:** `POST https://identitytoolkit.googleapis.com/v2/accounts/mfaSignIn:start?key=YOUR_API_KEY`
+- **Request Body:**
+  ```json
+  {
+    "mfaPendingCredential": "PENDING_CREDENTIAL",
+    "mfaEnrollmentId": "ENROLLMENT_ID",
+    "phoneSignInInfo": {}
+  }
+  ```
+- **Response:** Contains `sessionInfo`.
+
+⚠ **Issue:** Firebase requires a `recaptchaToken` to send the SMS code, which cannot be obtained via Postman. However, by adding a test phone number in Firebase, the verification code is always the same, making reCAPTCHA unnecessary.
+
+![Image](https://github.com/user-attachments/assets/5177f129-4b67-4252-85e0-3b9f179e48eb)
+
+
+##### 4. Verify the MFA Code
+- **Endpoint:** `POST https://identitytoolkit.googleapis.com/v2/accounts/mfaSignIn:finalize?key=YOUR_API_KEY`
+- **Request Body:**
+  ```json
+  {
+    "mfaPendingCredential": "PENDING_CREDENTIAL",
+    "phoneVerificationInfo": {
+      "sessionInfo": "SESSION_INFO",
+      "code": "RECEIVED_CODE"
+    }
+  }
+  ```
+
+![Image](https://github.com/user-attachments/assets/d2f52fb4-476f-42ed-aa55-3fd090ab336e)
+
 ### Client Architecture
 
 Architecture: N-layer
