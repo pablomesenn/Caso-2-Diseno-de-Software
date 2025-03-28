@@ -46,7 +46,7 @@ Strengths:
 
 ### Authentication platform
 
-The Authentication platform our team decide to use for the purpose of the current case was "Firebase Authentication". This platform is a service that is a part of the catalog services that Firebase offers. Firebase is a mobile and web development platform created by Google, and it provides a comprehensive suite of tools to simplify authentication and user management. We describe the multiple reasons why we think this tool is suficcient for the needed to complete task in the following point:
+The Authentication platform our team decided to use for the purpose of the current case was "Firebase Authentication". This platform is a service that is part of the catalog services that Firebase offers. Firebase is a mobile and web development platform created by Google, and it provides a comprehensive suite of tools to simplify authentication and user management. We describe the multiple reasons why we think this tool is sufficient to complete the tasks in the following points:
 
 a) Login and password:
 
@@ -261,3 +261,22 @@ Toolkits and standards:
    - Storybook (Web and Mobile): To document and test UI components in isolation.
    - Material Design 3: Focus on accessibility and modern design.
    - Apple Human Interface Guidelines: To follow iOS standards.
+
+
+### Object Design Patterns
+
+### External Services
+![External Services](https://github.com/user-attachments/assets/3a04f940-356a-4a3c-abd7-304a380bbc00)
+
+**Authentication & Authorization**
+Service Used: Firebase Authentication
+- Provides secure user authentication via email, phone, and third-party providers (Google, Facebook, etc.).
+- Handles session management and token-based authentication for protected actions.
+
+**Integration with SaaS & Cloud Services**
+- Google Cloud Storage: Stores user-generated data, such as voice recordings and AI-processed workflows.
+
+**External APIs & Services**
+- TensorFlow Serving (AI Model): Processes voice commands and generates step-by-step guides.
+- Third-Party Integrations (ERP, SaaS apps, Web apps): Connects with services like SAP, banking apps, Netflix, etc., to guide users through automated tasks.
+- Payment Gateway (Stripe, PayPal): Handles subscriptions and payments for premium plans.
