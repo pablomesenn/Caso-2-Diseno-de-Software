@@ -231,3 +231,33 @@ Key Points:
 - Python will handle the backend API endpoints and application logic.
 - Python will also be used for AI development.
 - Firebase will be used for hosting the application.
+
+
+### Visual Components
+
+Patterns:
+
+1. Atomic Design (Must):
+  - The UI will be designed by breaking it down into atoms (buttons, inputs), molecules (forms, cards), organisms (lists, panels), templates, and pages.
+  - Benefit: Facilitates component reuse and design scalability.
+2. MVP (Android), MVVM (React and Flutter) (Must):
+  - React Web → MVVM with Redux
+  - Flutter Mobile → MVVM with Provider or Riverpod
+
+Principles:
+1. SOLID (Must): Ensures modular, maintainable, and flexible code.
+2. DRY (Must): Prevents UI code duplication.
+3. Separation of Concerns (Must): Keeps logic separate from presentation and state management.
+4. Responsive Design (Must): 
+  - Uses Flexbox and CSS Grid in React and MediaQuery in Flutter to ensure responsiveness.
+  - Material Design for Android (since Flutter natively supports Material) and Web. Apple HIG for iOS.
+   
+Toolkits and standards:
+1. UI Components
+   - Web (React): Tailwind CSS
+   - Mobile (Flutter): Material Design (Android), Cupertino (iOS)
+
+2. Frameworks and Standards
+   - Storybook (Web and Mobile): To document and test UI components in isolation.
+   - Material Design 3: Focus on accessibility and modern design.
+   - Apple Human Interface Guidelines: To follow iOS standards.
