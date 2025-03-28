@@ -246,7 +246,6 @@ Service Used: Firebase Authentication
 
 **Integration with SaaS & Cloud Services**
 - Google Cloud Storage: Stores user-generated data, such as voice recordings and AI-processed workflows.
-- Firebase Firestore: Manages real-time data synchronization for user tasks and team collaboration.
 
 **External APIs & Services**
 - TensorFlow Serving (AI Model): Processes voice commands and generates step-by-step guides.
