@@ -38,6 +38,10 @@ Strengths:
 **DevOps & CI/CD:**
 - GitHub Actions: Automates integration and deployment workflows.
 
+**Quality Assurance:**
+- pytest, flutter test, react testing library: Covers unit and integration testing for different platforms.
+- Appium: Enables mobile automation testing, especially for third-party app interactions.
+
 ## Frontend design specifications"
 
 ### Authentication platform
