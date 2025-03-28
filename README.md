@@ -231,3 +231,24 @@ Key Points:
 - Python will handle the backend API endpoints and application logic.
 - Python will also be used for AI development.
 - Firebase will be used for hosting the application.
+
+### Visual Components
+
+### Object Design Patterns
+
+### External Services
+![External Services](https://github.com/user-attachments/assets/3a04f940-356a-4a3c-abd7-304a380bbc00)
+
+**Authentication & Authorization**
+Service Used: Firebase Authentication
+- Provides secure user authentication via email, phone, and third-party providers (Google, Facebook, etc.).
+- Handles session management and token-based authentication for protected actions.
+
+**Integration with SaaS & Cloud Services**
+- Google Cloud Storage: Stores user-generated data, such as voice recordings and AI-processed workflows.
+- Firebase Firestore: Manages real-time data synchronization for user tasks and team collaboration.
+
+**External APIs & Services**
+- TensorFlow Serving (AI Model): Processes voice commands and generates step-by-step guides.
+- Third-Party Integrations (ERP, SaaS apps, Web apps): Connects with services like SAP, banking apps, Netflix, etc., to guide users through automated tasks.
+- Payment Gateway (Stripe, PayPal): Handles subscriptions and payments for premium plans.
