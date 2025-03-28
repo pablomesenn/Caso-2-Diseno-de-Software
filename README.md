@@ -14,6 +14,29 @@ Strengths:
 - Flexible Monetization Model – Offers free trials and scalable subscription plans for businesses.
 
 ## Stack: write down the final stack to be use decided for the group"
+**Frontend:**
+- Mobile: Flutter (Android & iOS) – Ensures efficient background processing and real-time assistance.
+
+- Web: React – Provides high performance and scalability for web interactions.
+
+**Backend:**
+- Node.js: Manages multiple connections efficiently and integrates with the frontend.
+
+- Python: Specializes in AI-based processing and task automation.
+
+- REST & GraphQL: REST handles traditional backend operations, while GraphQL optimizes queries for efficient data retrieval.
+
+**Database:**
+- PostgreSQL: Chosen for its robust compatibility with the selected technologies.
+
+**AI & Machine Learning:**
+- TensorFlow: Powers voice command processing and automated task generation.
+
+**Cloud & Hosting:**
+- Google Cloud Platform (GCP): Ensures seamless integration with Firebase and scalable cloud services.
+
+**DevOps & CI/CD:**
+- GitHub Actions: Automates integration and deployment workflows.
 
 ## Frontend design specifications"
 
