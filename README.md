@@ -42,7 +42,7 @@ Strengths:
 
 ### Authentication platform
 
-The Authentication platform our team decide to use for the purpose of the current case was "Firebase Authentication". This platform is a service that is a part of the catalog services that Firebase offers. Firebase is a mobile and web development platform created by Google, and it provides a comprehensive suite of tools to simplify authentication and user management. We descibre the multiple reasons why we think this tool is suficcient for the needed to complete task in the following point:
+The Authentication platform our team decide to use for the purpose of the current case was "Firebase Authentication". This platform is a service that is a part of the catalog services that Firebase offers. Firebase is a mobile and web development platform created by Google, and it provides a comprehensive suite of tools to simplify authentication and user management. We describe the multiple reasons why we think this tool is suficcient for the needed to complete task in the following point:
 
 a) Login and password:
 
