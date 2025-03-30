@@ -265,6 +265,8 @@ Toolkits and standards:
 
 ### Object Design Patterns
 
+![UML class (3)](https://github.com/user-attachments/assets/d7fe7242-5131-46d0-ae20-d9c4af49e7a3)
+
 ### External Services
 ![External Services](https://github.com/user-attachments/assets/3a04f940-356a-4a3c-abd7-304a380bbc00)
 
