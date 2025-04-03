@@ -237,9 +237,9 @@ Key Points:
 
 Patterns:
 
-1. Atomic Design (Must):
-  - The UI will be designed by breaking it down into atoms (buttons, inputs), molecules (forms, cards), organisms (lists, panels), templates, and pages.
-  - Benefit: Facilitates component reuse and design scalability.
+1. Component-Based Architecture (Must):
+  - Since Tailwind CSS is utility-first. We can organize UI into reusable functional components.
+  - Maintain separation between presentational and container components.
 2. MVP (Android), MVVM (React and Flutter) (Must):
   - React Web → MVVM with Redux
   - Flutter Mobile → MVVM with Provider or Riverpod
