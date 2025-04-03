@@ -270,6 +270,10 @@ Toolkits and standards:
 ### External Services
 ![External Services](https://github.com/user-attachments/assets/3a04f940-356a-4a3c-abd7-304a380bbc00)
 
+### Project Structure
+
+![Captura de pantalla 2025-04-02 213716](https://github.com/user-attachments/assets/287aea21-230b-4085-8635-6742b702287c)
+
 **Authentication & Authorization**
 Service Used: Firebase Authentication
 - Provides secure user authentication via email, phone, and third-party providers (Google, Facebook, etc.).
