@@ -546,6 +546,72 @@ A decoupled architecture allows individual parts of the system to be deployed an
 
 ### Backend Architecture
 
+#### 3. Service vs Microservice
+Zathura is still an early in development application, taking this into account chosing to implement the single-service architecture is a strategic and realistic decision. This decision is justified by the following reasons:
+
+##### 1. Operational Simplicity
+
+- A single service means one codebase and one deployment pipeline.
+
+- There's no need for complex infrastructure such as service mesh, load balancers, or distributed monitoring.
+
+- It simplifies debugging, testing, and deployments.
+
+##### 2. Faster Development
+
+- Changes to business logic, database structure, or UI can be implemented, tested, and released much faster.
+
+- No communication overhead between distributed components or teams.
+
+##### 3. Cost Efficiency
+
+- Avoids the early cost and infrastructure overhead of managing microservices.
+
+- The team can stay focused on building core features rather than solving distributed system problems prematurely.
+
+##### 4. Sufficient Scalability
+
+- Internal modularity (handlers, services, repositories) ensures code maintainability and room for performance tuning.
+
+- Vertical scaling is feasible for expected traffic in the short term.
+
+- When necessary, you can extract services in the future thanks to the layered architecture already in place.
+
+##### Logical division for workload distribution
+
+Now, talking about logical distribution, even with a single service, clear internal separation of concerns is crucial to enable effective workload distribution and code scalability. The logical division for workload distribution are:
+
+| Layer         | Responsability                                        |
+|---------------|-------------------------------------------------------|
+| Handlers      | Handle HTTP request and delegate to services          |
+| Services      | Contain business logic and coordinate repositories    |
+| Respositories | Data acces layer (DB, external sources)               |
+| AI/ML Layer   | Voice recognition, workflow generation via TensorFlow |
+| Middleware    | Request parsing, validation, logging, etc..           |
+
+##### Team collaboration
+
+For purposes of being in agreement with the logical division set the code distribution will be the one described in the following image:
+
+![image](https://github.com/user-attachments/assets/9281a40c-2e92-41d8-851e-7aa8d6c086c5)
+
+##### Team collaboration
+
+Given the 4-member team, this section describes a practical distribution of roles based on expertise and responsibilities:
+
+| Member        | Main Role                     | Responsabilities                                    |  
+|---------------|-------------------------------|-----------------------------------------------------|
+| Pablo         | Architecture & Core Backend   | Services layer, repository design, logic decoupling |       
+| Alonso        | AI / ML Processing            | TensorFlow integration, voice command workflows     |
+| Ana           | Frontend & Authentication     | Firebase Auth, UI integration (Flutter & React)     |   
+| Jesus         | QA & DevOps                   | GitHub Actions, CI/CD setup, testing strategy       |
+
+#### 4. Event-Driven, Queues, Brokers, Producer/Consumer, Pub/Sub
+
+#### 5. API Gateway (Security & Scalability)?
+
+An API Gateway will not be used in this project because the application is designed as a single-service architecture. Since all logic and functionality are encapsulated within a single backend service, introducing an API Gateway would add unnecessary complexity and overhead without providing significant benefits. Features commonly handled by an API Gateway—such as request routing between multiple services, load balancing, or service aggregation—are not applicable in this context. As a result, direct communication between the client and the service is sufficient and more efficient for the current scope of the application.
+
 ### Data Layer Design for Zathura
 
 **I. Structural - Infrastructure, Architecture, DevOps, DataOps**
