@@ -42,7 +42,7 @@ Strengths:
 - pytest, flutter test, react testing library: Covers unit and integration testing for different platforms.
 - Appium: Enables mobile automation testing, especially for third-party app interactions.
 
-## Frontend design specifications"
+## Frontend design specifications
 
 ### Authentication platform
 
@@ -287,7 +287,13 @@ Service Used: Firebase Authentication
 - Third-Party Integrations (ERP, SaaS apps, Web apps): Connects with services like SAP, banking apps, Netflix, etc., to guide users through automated tasks.
 - Payment Gateway (Stripe, PayPal): Handles subscriptions and payments for premium plans.
 
-## Data Layer Design for Zathura
+## Backend Design Specifications
+
+### Proof of Concepts
+
+### Backend Architecture
+
+### Data Layer Design for Zathura
 
 **I. Structural - Infrastructure, Architecture, DevOps, DataOps**
 
@@ -338,3 +344,7 @@ Service Used: Firebase Authentication
     * Prioritize database normalization to maintain data integrity.
     * Use appropriate data types and indexing to optimize query performance.
     * Design the database schema to be scalable and flexible to accommodate future changes.
+
+## Architecture Design
+
+## Architecture Compliance Matrix
