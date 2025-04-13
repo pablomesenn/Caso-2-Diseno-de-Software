@@ -287,6 +287,8 @@ Service Used: Firebase Authentication
 - Third-Party Integrations (ERP, SaaS apps, Web apps): Connects with services like SAP, banking apps, Netflix, etc., to guide users through automated tasks.
 - Payment Gateway (Stripe, PayPal): Handles subscriptions and payments for premium plans.
 
+### Final FE architecture diagram
+
 ## Backend Design Specifications
 
 ### Proof of Concepts
