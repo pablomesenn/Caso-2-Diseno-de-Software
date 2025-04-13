@@ -274,6 +274,8 @@ Toolkits and standards:
 
 ![Captura de pantalla 2025-04-02 213716](https://github.com/user-attachments/assets/287aea21-230b-4085-8635-6742b702287c)
 
+### Final FE architecture diagram
+
 **Authentication & Authorization**
 Service Used: Firebase Authentication
 - Provides secure user authentication via email, phone, and third-party providers (Google, Facebook, etc.).
