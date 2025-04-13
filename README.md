@@ -785,9 +785,9 @@ Now, talking about logical distribution, even with a single service, clear inter
 | AI/ML Layer   | Voice recognition, workflow generation via TensorFlow |
 | Middleware    | Request parsing, validation, logging, etc..           |
 
-##### Team collaboration
+##### Code organization
 
-For purposes of being in agreement with the logical division set the code distribution will be the one described in the following image:
+For purposes of being in agreement with the logical division set the code organization will be the one described in the following image:
 
 ![image](https://github.com/user-attachments/assets/9281a40c-2e92-41d8-851e-7aa8d6c086c5)
 
@@ -803,6 +803,49 @@ Given the 4-member team, this section describes a practical distribution of role
 | Jesus         | QA & DevOps                   | GitHub Actions, CI/CD setup, testing strategy       |
 
 #### 4. Event-Driven, Queues, Brokers, Producer/Consumer, Pub/Sub
+
+Below in this section is a detailed explanation on how the architectures named in the title can be applied to the application, along with the proposed cloud services to implement each of the achitectures and a proposal of integration layers with their respective classes.
+
+##### a) Event-Driven architecture (Google Cloud Pub/Sub)
+
+When a user completes a voice recording or triggers an action, an event is generated to start downstream processing. For example, after recording a voice command, an event can trigger asynchronous analysis using AI (TensorFlow) and then update the knowledge base or prepare guidance steps.
+
+**BENEFITS**
+
+- Decouples the initiation of an action from its processing.
+- Enables reactive, real-time adjustments and asynchronous workflows. 
+
+##### b) Queues and Producer/Consumer Pattern (Google Cloud Pub/Sub and Google Cloud Tasks)
+
+Some processes, such as processing audio files and running heavy AI computations, can be time-consuming. Instead of blocking the user request, these tasks are added to a queue to be processed later by a dedicated consumer service.
+
+**BENEFITS**
+
+- Improves system responsiveness by offloading heavy or long duration tasks.
+- Enables load leveling so that peaks of incoming requests are buffered (temporarily storing or "buffering" these requests).
+  
+##### c) Brokers and Pub/Sub (Google Cloud Pub/Sub)
+
+Messaging brokers support Pub/Sub systems where an event (like “Task Recorded” or “Workflow Analyzed”) is published, and various subscribers (e.g., logging, analytics, notification services) can react independently. This makes it easier to expand functionalities without tightly coupling components. In a more specific way, the broker (which supports the Publish/Subscribe model), lets the producer publishes an event once and the broker then reliably distributes that event to multiple subscribers. For example, multiple services can subscribe to the “Task Recorded” event and perform different actions (e.g., update the workflow database, trigger notifications, log activity for auditing) without interfering with each other. 
+
+**BENEFITS**
+
+- Scalability and flexibility by allowing multiple services to subscribe to the same events.
+- Centralized message management with robust delivery guarantees.
+
+##### Integration Layers
+
+**Messaging Integration Layer:**
+Contains the EventPublisher and EventSubscriber classes; handles Pub/Sub topics and subscriptions for event-driven processing.
+
+**Queue Integration Layer:**
+Contains the TaskQueueManager class; encapsulates asynchronous task submission using Cloud Tasks. You might also include retry logic and schedule management here.
+
+**Service/Business Layer Integration:**
+Your existing service classes (e.g., ExampleService) will call these messaging utilities to publish events or queue tasks. For example, after processing a voice command, ExampleService will call EventPublisher.publishEvent('voiceCommandTopic', payload) to trigger downstream processing without blocking user interaction.
+
+**Controller/Handler Layer:**
+Handlers (such as API endpoints) receive HTTP requests and delegate to the service layer, which in turn uses the messaging integrations.
 
 #### 5. API Gateway (Security & Scalability)?
 
