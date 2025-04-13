@@ -632,6 +632,11 @@ Some processes, such as processing audio files and running heavy AI computations
 
 Messaging brokers support Pub/Sub systems where an event (like “Task Recorded” or “Workflow Analyzed”) is published, and various subscribers (e.g., logging, analytics, notification services) can react independently. This makes it easier to expand functionalities without tightly coupling components. In a more specific way, the broker (which supports the Publish/Subscribe model), lets the producer publishes an event once and the broker then reliably distributes that event to multiple subscribers. For example, multiple services can subscribe to the “Task Recorded” event and perform different actions (e.g., update the workflow database, trigger notifications, log activity for auditing) without interfering with each other. 
 
+**BENEFITS**
+
+- Scalability and flexibility by allowing multiple services to subscribe to the same events.
+- Centralized message management with robust delivery guarantees.
+
 ##### Integration Layers
 
 **Messaging Integration Layer:**
