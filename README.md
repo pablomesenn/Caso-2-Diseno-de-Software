@@ -274,8 +274,6 @@ Toolkits and standards:
 
 ![Captura de pantalla 2025-04-02 213716](https://github.com/user-attachments/assets/287aea21-230b-4085-8635-6742b702287c)
 
-### Final FE architecture diagram
-
 **Authentication & Authorization**
 Service Used: Firebase Authentication
 - Provides secure user authentication via email, phone, and third-party providers (Google, Facebook, etc.).
@@ -288,6 +286,8 @@ Service Used: Firebase Authentication
 - TensorFlow Serving (AI Model): Processes voice commands and generates step-by-step guides.
 - Third-Party Integrations (ERP, SaaS apps, Web apps): Connects with services like SAP, banking apps, Netflix, etc., to guide users through automated tasks.
 - Payment Gateway (Stripe, PayPal): Handles subscriptions and payments for premium plans.
+
+### Final FE architecture diagram
 
 ## Backend Design Specifications
 
