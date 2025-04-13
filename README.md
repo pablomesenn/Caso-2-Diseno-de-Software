@@ -291,7 +291,203 @@ Service Used: Firebase Authentication
 
 ### Proof of Concepts
 
+#### POC Step 1 - Handler Responsibilities (SOLID & Cohesion Principle)
+
+##### Challenged Faced
+
+The original template both handlers are almost identical, both use the same middleware and the same repository, and both of them use the same processing flow. the only difference is the calling of saveData and getData, so lets take that as base line do differenciate them.
+
+- There are unclear responsabilities
+- Each handler directly imports and instatiates its dependencies
+- Poor separation of concerns due to mix of HTTP concerns with business logic.
+
+It's not clear why `exampleHandlerOne` and `exampleHandlerTwo` are different, both are doing too many things parsing, validation, business logic (via repository), and formatting a response.
+
+##### Solution Chosen
+
+To solve this problem we must refractor the structure using SOLID principles, specially Single Responsability Principle, and Dependecy Inversion, and also the DRY principle:
+
+First create a type.ts file as a central place for interface definitions, by centralizing these interfaces, we establish a clear set of expectations for how components should interact. This follows the Dependency Inversion Principle, allowing handlers and other high level modules to depend on abstractions. Amongst other purposes:
+
+- It serves as self-documentating code clarifying what operations repositories should suppert
+- How event processing should work and what a standard HTTP response looks like. 
+- If there is a need to change there is one place to do it, and TS will help identify all places to be updated.
+- Modularization (Decoupling)
+- It's easier to create doubles for testing that implement these interfaces without needing the actual implementations.
+
+```
+// types.ts
+export interface EventProcessor {
+  process(event: any): any;
+}
+
+export interface DataRepository {
+  saveData(data: any): Promise<any>;
+  getData(query: any): Promise<any>;
+}
+
+export interface HttpResponse {
+  statusCode: number;
+  body: string;
+  headers?: Record<string, string>;
+}
+```
+
+Taking as a fact that errors and response formatting will be a common thing with handlers, then it would be only logical to create a module that handles that `baseHandler.ts`:
+
+```
+import { EventProcessor, DataRepository, HttpResponse } from '../types';
+
+export abstract class BaseHandler {
+  constructor(
+    protected eventProcessor: EventProcessor,
+    protected repository: DataRepository
+  ) {}
+
+  protected abstract executeOperation(processedEvent: any): Promise<any>;
+
+  protected createSuccessResponse(data: any): HttpResponse {
+    return {
+      statusCode: 200,
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+  }
+
+  protected createErrorResponse(error: Error): HttpResponse {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'An error occurred',
+        error: error.message
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+  }
+
+  public async handle(event: any): Promise<HttpResponse> {
+    try {
+      const processedEvent = this.eventProcessor.process(event);
+      const result = await this.executeOperation(processedEvent);
+      return this.createSuccessResponse(result);
+    } catch (error) {
+      return this.createErrorResponse(error as Error);
+    }
+  }
+}
+```
+
+Taking the above mentioned principles the improve structure for `exampleHandlerOne.ts` would look like this `saveDataHandler.ts`:
+
+```
+import { BaseHandler } from './baseHandler';
+
+export class SaveDataHandler extends BaseHandler {
+  protected async executeOperation(processedEvent: any): Promise<any> {
+    const result = await this.repository.saveData(processedEvent);
+    return {
+      message: 'Data saved successfully',
+      data: result
+    };
+  }
+}
+```
+
+And the same for `exampleHandleTwo.ts` as `getDataHandler.ts`:
+
+```
+import { BaseHandler } from './baseHandler';
+
+export class GetDataHandler extends BaseHandler {
+  protected async executeOperation(processedEvent: any): Promise<any> {
+    return await this.repository.getData(processedEvent);
+  }
+}
+```
+
+In this new design the the handlers are actually using the middleware, but indirectly through the EventProcessor interface. The middleware is injected into the handlers when they're instantiated.
+
+Here is the refractor `exampleMiddleWare.ts` and `exampleRepository.ts`:
+
+```
+import { EventProcessor } from '../types';
+
+export class ExampleMiddleware implements EventProcessor {
+  process(event: any): any {
+    // Process the event
+    return {
+      ...event,
+      // Add any necessary transformations
+      timestamp: new Date().toISOString()
+    };
+  }
+}
+```
+
+```
+import { DataRepository } from '../types';
+
+export class ExampleRepository implements DataRepository {
+  async saveData(data: any): Promise<any> {
+    // Implementation for saving data
+    return { id: '123', ...data };
+  }
+
+  async getData(query: any): Promise<any> {
+    // Implementation for retrieving data
+    return { id: '123', name: 'Example', ...query };
+  }
+}
+```
+
+And finally how to implement the handlers:
+
+```
+export const exampleHandlerOne = async (event: any) => {
+  const middleware = new ExampleMiddleware();
+  const repository = new ExampleRepository();
+  const handler = new SaveDataHandler(middleware, repository);
+  
+  return await handler.handle(event);
+};
+
+export const exampleHandlerTwo = async (event: any) => {
+  const middleware = new ExampleMiddleware();
+  const repository = new ExampleRepository();
+  const handler = new GetDataHandler(middleware, repository);
+  
+  return await handler.handle(event);
+};
+```
+
+##### Advantages over the original template
+
+###### There are now clear responsabilities 
+Between the handlers and a sigle one for each:
+- `SaveDataHandler` handles saving data
+- `GetDataHandler` handles only retrieving data
+- `BaseHandler` handles common logic for errors and response formatting
+
+###### Dependencies are now injected 
+rather than imported and instantiated:
+- Handlers depend on `EventProcessor` and `DataRepository` 
+- This makes testing easier as dependencies can be mocked
+
+###### There is now less duplication
+Common code has been extracted to the `BaseHandler` class following DRY principle.
+
+###### Better Separations of concern
+- HTTP-specific concerns are separated from bussiness logic
+- Error handling is centralized in the `BaseHandler`
+- Business logic is only in the `excecuteOperation` method for each hendler
+
 #### POC Step 2 - README.md Fixes & Adjustments
+
+#### POC Step 4 - Optional & Mandatory Middleware (Design Pattern Required)
 
 #### POC Step 5 - Repository Layer Improvements (Decoupling & Reusability)
 
@@ -299,7 +495,7 @@ Service Used: Firebase Authentication
 
 In the original state of the template provided previously in the documentation there are 2 main problems:
 
-1- Handlers consume directly the repositories, generating a strong coupling. This means tha any changes to the logic of accesing the data or in the data source force changes to the handler code as well.
+1- Handlers consume directly the repositories, generating a strong coupling. This means that any changes to the logic of accesing the data or in the data source force changes to the handler code as well.
 
 2- There is no middle layer for business logic. The handler assumes all extra responsabilities while processing directly the request and delegating data persistence without applying a separate layer for business logic. This means that validation, transformation, or any other logic inherent to information processing is directly integrated into the routing and event handling logic.
 
