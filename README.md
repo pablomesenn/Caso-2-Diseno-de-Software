@@ -742,6 +742,168 @@ A decoupled architecture allows individual parts of the system to be deployed an
 
 ### Backend Architecture
 
+#### 1. REST, GraphQL, gRPC, Monolithic, or Monolithic-MVC?
+
+This project will approach a Monolithic-MVC architecture with a hybrid REST/GraphQL API. The reason for this approach is first because Zathura plans to implement a hybrid approach using both REST and GraphQL. REST handles traditional backend operations, while GraphQL optimizes queries for efficient data retrieval.
+In this hybrid model, both would coexist and hadle different types of operations:
+
+1. REST for Traditional Operations
+- CRUD operations
+- File uploads like voice recordings, training data
+- Authentication and user management
+- Webhook (a way for one software system to automatically notify another system when a specific event happens) for external service integration
+
+2. GraphQL for Data Retrieval
+- Complex dashboard data aggregation
+- Customized user-specific views
+- Optimized mobile queries to reduce bandwidth usage
+- Real time data needs via subcriptions
+
+The devolpment team is just of 4 members and has decided to implement a single-service architectue, which makes much sense to make a monolithic approach than microservices.
+
+##### Internal Layers Handling Requests/Responses
+Similar to the PoC, the defined layers are:
+
+1. Handler Layer (Controller in terms of MVC)
+- Entry point for all the HTTP resquests (REST) and GraphQL operations.
+- Delegates business logic to the Service Layer
+- Applies middleware for cross-cutting concerns
+- Returns formatted HTTP responses
+
+2. Middleware Layer
+- Pre-/post-processing for handlers 
+- Authentication, logging, request parsing
+- Could be optional or mandatory depending of context
+
+3. Service Layer
+- Contains core business logic CRUD and others
+- Coordinates between repositories and other services
+- Validations and transformations
+
+4. Repository Layer
+- Abstracts data access operations
+- Implements interfaces for different data sources
+- Handles persistence logic
+
+5. AI Layer
+- Process voice commands with TensorFlow
+- Generated automated tasks
+Interfaces with the service layer
+
+##### How do object design patterns interact with requests or any other triger
+
+1. Factory Pattern
+    Used in the Repository layer to dynamically create appropriate repository instances and triggered during request handling to select the correct data source
+
+2. Repository Pattern
+    Abstracts data source operations behind interfaces. Allows handlers/services to work with data without knowing storage details
+
+3. Template Method Pattern
+    Evident in the BaseHandler abstract class, defines the skeleton of request handling while allowing subclasses to override specific steps
+
+4. Strategy Pattern
+    Applied to middleware components, allowing different processing strategies to be applied to requests
+    and supports both optional and mandatory middleware
+
+5. Dependency Injection
+    Services receive repositories through construction. Handlers receive services through construction, and facilitates testing and loose coupling
+
+6. Event-Driven Pattern
+    After handling synchronous aspects of requests, events are published via Google Cloud Pub/Sub
+    These events trigger asynchronous processing for time-consuming operations
+
+7. Pub/Sub Pattern
+    When certain actions are triggered (like task recording), multiple subscribers can react
+    Allows for extensibility without modifying existing code
+
+
+This architecture provides a clean separation of concerns, enables efficient request handling, and maintains flexibility for future growth while keeping the system manageable for the current team size and development stage.
+
+#### 2. Serverless, Cloud, On-Premise, or Hybrid?
+
+This project is designed for a cloud based infraestructure with serverless component in a hybrid approach. Google Cloud Platform has been chosen as cloud provider for Firebase and scalable cloud services for core fuctionability.
+
+##### Hardware Semands and Cloud Machine Types
+1. Compute resourses
+  - AI and Machine Learning processing: TensoFlow workloads for voice command processing require GPU-accerated instances, meaning the employment of a graphics processing unit (GPU) along with a computer processing unit (CPU).
+  - Backend services are needed, standard compute instances for Node.js and Python services.
+  - Virtual machines from Google Cloud Platform like `n1-standard` for the Node.js services, `n1-highmem` for Pyhton AI processing, and `t2d-standard` for cost-efficient background processing.
+
+2. Storage Requirements
+  - Database: PostgreSQL requires persistent SSD storage
+  - Voice Recordings: Cloud Storage buckets for user-generated content
+  - GCP Storage Types:
+
+    Cloud SQL with SSD persistent disks for PostgreSQL
+
+    Standard storage class in Cloud Storage for voice recordings
+
+    Nearline storage for older, less frequently accessed data
+
+3. Network Requirements
+
+  - Content delivery network for global user base "global availability
+  - API Gateway: For securing and managing API endpoints
+  - GCP Network Services related to this:
+
+    Cloud CDN for content delivery
+    Cloud Load Balancing for distributing traffic
+
+4. Serverless Components
+
+  - Firebase
+    Authentication service
+    Real-time database for specific use cases
+    Hosting for web applications
+
+  - Cloud Functions
+    Event-driven processing for voice command analysis
+    Webhook handlers for third-party integrations
+
+  - Cloud Run
+    Containerized microservices for core business logic
+    Scales automatically based on demand
+
+##### Impacts frameworks, libraries, and programming languages.
+
+1. Programming Languages
+
+  **Node.js**: It's a efficient languaje able to handle multiple connections, event-driven architecture which aligns with serverless model, it has a rich ecosystem of libraries too. It has very good support with GCP cloud functions and cloud run (deployment). 
+  **Python**: It has impressive campabilities for ML and AI through TensorFlow, ectensive data processing libraries which is a important key for Zathura.
+  On cloud it has native support in GCP's AI platform, with integration with BigQuery for analytics
+
+2. Frontend Frameworks
+
+  **Flutter**: Its crossplataform compability reduces development effort and time, and has a efficient background processing.
+  Works well with Firebase services (Authentication and cloud messaging), meaning there is compability between them.
+
+  **React**: This framework has high performance, component reusability, and a large ecosystem.
+  It is optimized for Firebase hosting, and integrates well with most GCP services.
+
+3. Database Technologies
+
+  **PostgresSQL**: It is a robust relational database, ACID complience, poweful capabilities.
+  It is fully managed in Cloud SQL, reucing operational overhead.
+
+  **Firebase**: It has real time updates, offline support, serverless operations.
+  Also native with GCP.
+
+4. DevOps & CI/CD
+  
+  **Github Actions**: Makes automated workfows, community-built actions. 
+  It also has a strong integration with GCP deployment targets.
+
+5. AI/ML Frameworks
+  
+  **TensoFlow**: For now the industry leading ML framework, with extensice model options. 
+  Ptimized performance on GCP AI platform, and TPU (hardware accelerator specialized in AI) support.
+
+6. Libraries:
+  **React Testing Library**: Provides testing for react components
+  **Flutter Test**: Provides testing for flutter apps.
+  **pytest**: Useful for backend unit and integration testing.
+  **Appium**: For automation testing for third party app interactions. 
+
 #### 3. Service vs Microservice
 Zathura is still an early in development application, taking this into account chosing to implement the single-service architecture is a strategic and realistic decision. This decision is justified by the following reasons:
 
