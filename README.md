@@ -489,258 +489,110 @@ Common code has been extracted to the `BaseHandler` class following DRY principl
 
 #### POC Step 2 - README.md Fixes & Adjustments
 
+##### Challenge faced
+The original template’s README lacked documentation on common AWS CLI errors and their possible solutions. This led to confusion during deployment and issues related to AWS functionality within the project.
+
+##### Solution chosen
+
+Additional documentation was added to the README to address these common AWS CLI errors and provide guidance on how to resolve them.
+
+##### Advantages over original template
+
+The updated README offers clearer and more comprehensive information, helping users troubleshoot AWS-related issues more effectively and improving the overall deployment experience.
+
+#### POC Step 3 - Logger Improvements (Design Pattern Required)
+
 #### POC Step 4 - Optional & Mandatory Middleware (Design Pattern Required)
+
+##### Challenge faced
+
+The challenge lies in designing a flexible and extensible middleware architecture that supports both optional and mandatory components. Middleware should be easily chainable, allowing developers to attach multiple layers of logic such as logging, validation, or transformation. However, certain middleware—like authentication or security checks—must always be executed to ensure the integrity and safety of the system. 
+
+The core problem is finding a way to enforce the presence of these mandatory middleware components without compromising the modularity and reusability of the middleware chain. This requires applying an appropriate design pattern that guarantees required middleware are included, while still supporting the dynamic composition of optional middleware.
+
+##### Solution chosen
+
+###### Here is the system flow:
+  A request comes in to `exampleHandlerOne`
+
+  **The handler**:
+
+  1. Creates a repository instance
+  2. Creates a SaveDataHandler with the repository
+  3. Calls handle on the handler with the event
+
+
+  **The `SaveDataHandler`**:
+
+  1. Inherits from AuthenticatedHandler which requires authentication middleware
+  2. Configures its middleware chain with logging, validation, and authentication
+
+
+  **The `handle` method**:
+
+  1. Processes the event through the middleware chain
+  2. The chain verifies all mandatory middleware (authentication) is present
+  3. Each middleware processes the event in sequence
+  4. The handler executes its operation using the processed event
+  5. The handler returns a success or error response
+
+
+
+###### Key Design Patterns Used
+
+  1. **Chain of Responsibility**: Middleware components form a chain that processes events in sequence.
+  2. **Template Method**: `BaseHandler` defines the algorithm structure while subclasses implement specific steps.
+  3. **Composition**: Handlers compose middleware chains rather than inheriting behavior.
+  4. **Factory Method**: Each handler creates and configures its own middleware chain.
+
+##### Advantages over original template
+
+  - Flexibility: Each handler can have its own middleware configuration.
+  - Extensibility: New middleware can be added without changing existing code.
+  - Enforcement: Mandatory middleware can be enforced for specific handler types.
+  - Separation of Concerns: Each component has a clear, single responsibility.
+  - Testability: Components can be tested in isolation with mock dependencies.
+
+  ###### Common Workflows
+    #### Adding a New Middleware
+
+    1. Create a new class that extends `BaseMiddleware`
+    2. Implement the `processEvent` method
+    3. Add a new type to `MiddlewareType` if needed
+
+    #### Creating a New Handler
+
+    1. Decide if it needs authentication:
+
+      If yes, extend `AuthenticatedHandler`
+      If no, extend `BaseHandler`
+    2. Configure its middleware chain in the constructor
+    3. Implement the `executeOperation` method
+
+    #### Making a Middleware Mandatory
+
+      Pass its type in the constructor of handlers that require it:
+
+      ```
+      super(repository, [MiddlewareType.YOUR_MIDDLEWARE]);
+      ```
+     This can is used in `authenticatedHandler.ts`.
 
 #### POC Step 5 - Repository Layer Improvements (Decoupling & Reusability)
 
-##### Challenged Faced
+##### Challenge faced
 
-In the original state of the template provided previously in the documentation there are 2 main problems:
+##### Solution chosen
 
-1- Handlers consume directly the repositories, generating a strong coupling. This means that any changes to the logic of accesing the data or in the data source force changes to the handler code as well.
-
-2- There is no middle layer for business logic. The handler assumes all extra responsabilities while processing directly the request and delegating data persistence without applying a separate layer for business logic. This means that validation, transformation, or any other logic inherent to information processing is directly integrated into the routing and event handling logic.
-
-This 2 main problems derivate other drawbacks such as the level of difficulty to implement different types of repositories, in the next sections it will be explain how to solve this situation efficiently.
-
-##### Solution Chosen
-
-###### 1. Introduce a business logic midle layer (Services)
-
-Introducing a services layer that function as an intermediary between the handler and the repository. This layer will ber in charge of:
-
-- Validate and transform the data.
-- Coordinate logic business (such as validation rules or coordinations with other repositories).
-- Coordinate calls to multiple repositories if needed.
-
-```
-class ExampleService {
-
-private repository:IExampleRepository
-
-constructor(repository) {
-   this.repository = repository; 
-}
-
-async processAndSaveData(data){
-}
-   // Could code some validations if needed
-   if (!data || typeof data !== "object") {
-      throw new Error("Datos inválidos.");
-   }
-
-   // Can code aditional business logic before data persist.
-
-   // Llamada al repositorio para persistir los datos.
-   return await this.repository.saveData(data);
-}
-
-export default ExampleService;
-```
-###### 2. Upgrades to repository class
-
-Define an interface for the repository class that declares the methods that must be implemented.
-
-```
-export interface IRepository {
-  getData(): any[];
-  saveData(data: any): Promise<any>;
-}
-
-import { IRepository } from './Interface';
-
-export class ExampleRepository implements IRepository {
-  private dataStore: any[] = [];
-
-  getData(): any[] {
-    return this.dataStore;
-  }
-
-  async saveData(data: any): Promise<any> {
-    this.dataStore.push(data);
-    return data;
-  }
-}
-```
-###### 3. Modify the handler code to decouple the repository
-
-The handler should interact only with the service layer. This way, any business logic or validation rules are delegated to the appropriate layer.
-
-```
-export const exampleHandlerOne = async (event: any) => {
-   try {
-   // Import the middleware and repository
-   const { exampleMiddleware } = require('../middleware/exampleMiddleware');
-   const { ExampleRepository } = require('../repository/exampleRepository');
-   const { ExampleService } = require('../services/exampleService');
-
-   // Process the request using the middleware
-   const processedEvent = exampleMiddleware(event);
-
-   // Create an instance of the repository, then inject the dependency to the service
-   const repository = new ExampleRepository();
-   const service = new ExampleService(repository);
-
-   // Perform an operation, e.g., saving data
-   const result = await service.processAndSaveData(processedEvent);
-
-   return {
-      statusCode: 200,
-      body: JSON.stringify({
-         message: 'Data saved successfully',
-         data: result,
-      }),
-   };
-   } catch (error) {
-    // Manejo de errores centralizado
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: error.message }),
-    };
-  }
-};
-```
-###### 4. Support for multiple data sources (repositories)
-
-The principle idea for the purpose of the code being capable of support multiple data repositories is to apply the Factory design pattern. This way we can have multiple classes representing each repository or data source and via the Factory control which one of this classes instance is going to be created and used. All of this using the IRepository mentioned earlier in this document.
-
-```
-// The different classes of the differents source of data
-
-// repository/ExampleRepository.js
-export class ExampleRepository implements IRepository {
-  constructor() {
-    this.dataStore = [];
-  }
-
-  getData() {
-    return this.dataStore;
-  }
-
-  async saveData(data) {
-    this.dataStore.push(data);
-    return data;
-  }
-}
-
-// repository/DatabaseRepository.js
-export class DatabaseRepository implements IRepository {
-  getData() {
-    // Simular una consulta a DB
-    return ['from-database'];
-  }
-
-  async saveData(data) {
-    // Simular un insert en DB
-    console.log('Data saved to DB:', data);
-    return data;
-  }
-}
-```
-
-```
-// Implement the main factory class and the concrete factories
-import { IRepository } from './Interface';
-
-export class RepositoryFactory {
-   abstract createRepository(): IRepository;
-}
-
-// repository/factories/ExampleRepositoryFactory.ts
-import { RepositoryFactory } from './RepositoryFactory';
-import { ExampleRepository } from '../ExampleRepository';
-
-export class ExampleRepositoryFactory extends RepositoryFactory {
-  createRepository() {
-    return new ExampleRepository();
-  }
-}
-
-// repository/factories/DatabaseRepositoryFactory.ts
-import { RepositoryFactory } from './RepositoryFactory';
-import { DatabaseRepository } from '../DatabaseRepository';
-
-export class DatabaseRepositoryFactory extends RepositoryFactory {
-  createRepository() {
-    return new DatabaseRepository();
-  }
-}
-```
-
-```
-// Factory selector
-
-// repository/factories/RepositoryFactorySelector.ts
-import { RepositoryFactory } from './RepositoryFactory';
-import { ExampleRepositoryFactory } from './ExampleRepositoryFactory';
-import { DatabaseRepositoryFactory } from './DatabaseRepositoryFactory';
-
-export function getRepositoryFactory(): RepositoryFactory {
-  const type = process.env.DATA_SOURCE || 'memory';
-
-  switch (type) {
-    case 'memory':
-      return new ExampleRepositoryFactory();
-    case 'database':
-      return new DatabaseRepositoryFactory();
-    default:
-      throw new Error(`Unknown repository type: ${type}`);
-  }
-}
-```
-
-```
-// Modify the handler code to use the factory design pattern
-export const exampleHandlerOne = async (event: any) => {
-   try {
-   // Import the middleware and repository
-   const { exampleMiddleware } = require('../middleware/exampleMiddleware');
-   const { ExampleRepository } = require('../repository/exampleRepository');
-   const { ExampleService } = require('../services/exampleService');
-
-   // Process the request using the middleware
-   const processedEvent = exampleMiddleware(event);
-
-   // Create an instance of the repository
-   const factory = getRepositoryFactory();
-   const repository = factory.createRepository();
-   const service = new ExampleService(repository)
-
-   // Perform an operation, e.g., saving data
-   const result = await service.processAndSaveData(processedEvent);
-
-   return {
-      statusCode: 200,
-      body: JSON.stringify({
-         message: 'Data saved successfully',
-         data: result,
-      }),
-   };
-   } catch (error) {
-    // Manejo de errores centralizado
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: error.message }),
-    };
-  }
-};
-
-```
 ##### Advantages over the original template
 
-The more notorious advantages or benefits compared to the original template are: 
+#### POC Step 6 - Deployment & Testing
 
-- Decoupling:
-By separating business logic from data access, the direct dependency between layers is reduced. This makes maintenance, unit testing, and code evolution easier.
+##### Challenge faced
 
-- Flexibility:
-With dependency injection and the use of interfaces, the system can support different repositories (multiple data sources) without modifying the core logic.
+##### Solution chosen
 
-- Reusability and Scalability:
-Business logic encapsulated in services can be reused across other handlers or processes, and adding new features becomes simpler.
-
-- Readiness for Serverless and Microservices Environments:
-A decoupled architecture allows individual parts of the system to be deployed and scaled independently, aligning with the ephemeral and distributed nature of these environments.
+##### Advantages chosen
 
 ### Backend Architecture
 
