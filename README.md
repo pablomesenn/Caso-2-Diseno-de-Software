@@ -502,6 +502,24 @@ The updated README offers clearer and more comprehensive information, helping us
 
 #### POC Step 3 - Logger Improvements (Design Pattern Required)
 
+##### Challenge faced
+
+The original template used console.log() for logging, which is inadequate for production environments. It lacks features like log levels, structured formatting, and integration with centralized logging systems, making debugging and monitoring difficult in deployed applications.
+
+##### Solution Chosen
+
+We implemented a Logger interface and a CloudWatchLogger class, utilizing the AWS SDK to send logs to CloudWatch Logs. This adheres to the Strategy pattern, allowing for different logging implementations in the future.
+
+##### Advantages over the original template
+
+1. Provides structured logging with log levels (info, error, etc.) for better filtering and analysis.
+
+2. Integrates seamlessly with AWS CloudWatch for centralized log management, enabling efficient monitoring and troubleshooting in production.
+
+3. The Logger interface promotes flexibility, allowing for easy switching to other logging services or methods (e.g., file logging) without modifying the application's core logic.
+
+4. Improves maintainability by encapsulating logging logic within dedicated classes.
+
 #### POC Step 4 - Optional & Mandatory Middleware (Design Pattern Required)
 
 ##### Challenge faced
@@ -589,10 +607,18 @@ The core problem is finding a way to enforce the presence of these mandatory mid
 #### POC Step 6 - Deployment & Testing
 
 ##### Challenge faced
+The original template lacked robust testing and deployment procedures. This can lead to increased risk of bugs in production and make it difficult to automate the deployment process.
 
 ##### Solution chosen
+We implemented unit tests using Jest to verify handler logic. For handlers interacting with the database, we outlined the structure for integration tests, emphasizing the importance of using a separate test database. We also detailed how to use the Serverless Framework for deployment and Postman for API testing.
 
-##### Advantages chosen
+##### Advantages over the original template
+
+1. Increases code reliability by implementing automated unit tests that catch bugs early in the development cycle.
+2. Provides a clear strategy for integration testing, ensuring that handlers interact correctly with external resources like the database.
+3. Leverages the Serverless Framework to streamline deployment to AWS, automating the packaging and deployment of code.
+4. Utilizes Postman to simplify API testing, enabling developers to easily send requests and verify responses.
+5. Improves the overall development workflow by introducing best practices for testing and deployment.
 
 ### Backend Architecture
 
