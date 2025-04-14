@@ -29,6 +29,43 @@ svlesstemplate
 - AWS CLI configured with your credentials
 - Serverless Framework installed globally (`npm install -g serverless`)
 
+## Possible AWS CLI Errors and Solutions
+
+### 1. Missing or Incorrect Credentials
+
+**Error:** `Unable to locate credentials` or `InvalidClientTokenId`  
+**Solution:**  
+- Run `aws configure` and make sure to enter valid Access Key, Secret Key, and region.
+- If using a `.env` file, verify that the keys are correctly defined and loaded.
+
+### 2. Insufficient Permissions
+
+**Error:** `AccessDenied` or `is not authorized to perform`  
+**Solution:**  
+- Ensure your IAM user/role has the correct permissions to deploy resources (Lambda, API Gateway, etc.).
+- Validate any custom policies attached to your AWS identity.
+
+### 3. Incorrect AWS Region
+
+**Error:** `The specified region is not valid`  
+**Solution:**  
+- Double-check your region in `~/.aws/config` or your `.env` file.
+- Confirm the region supports the services your project uses.
+
+### 4. Conflicts from Multiple AWS Profiles
+
+**Issue:** Incorrect credentials due to active profile mismatch.  
+**Solution:**  
+- Specify the correct profile with `--profile <profile-name>` when running commands.
+- Or set the `AWS_PROFILE` environment variable accordingly.
+
+### 6. Network or Connectivity Issues
+
+**Error:** `Connection timed out` or unexpected connection failures.  
+**Solution:**  
+- Ensure you're connected to the internet and can reach AWS endpoints.
+- Check firewalls or proxies that might block outbound traffic.
+
 ## Setup Instructions
 
 1. **Clone the repository** (if applicable):
@@ -81,11 +118,3 @@ serverless deploy
 ```
 
 This command will package your application and deploy it to AWS, creating the necessary resources.
-
-## Modifying the Application
-
-- **Handlers**: Modify `src/handlers/exampleHandlerOne.ts` and `src/handlers/exampleHandlerTwo.ts` to change the behavior of your Lambda functions.
-- **Middleware**: Update `src/middleware/exampleMiddleware.ts` to add or modify request processing logic.
-- **Repository**: Change `src/repository/exampleRepository.ts` to adjust data operations.
-- **Logging**: Use the `log` function from `src/utils/logger.ts` for logging throughout your application.
-
