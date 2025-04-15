@@ -600,9 +600,74 @@ The core problem is finding a way to enforce the presence of these mandatory mid
 
 ##### Challenge faced
 
+In the original state of the template provided previously in the documentation there are 2 main problems:
+
+- Handlers consume directly the repositories, generating a strong coupling. This means that any changes to the logic of accesing the data or in the data source force changes to the handler code as well.
+
+- There is no middle layer for business logic. The handler assumes all extra responsabilities while processing directly the request and delegating data persistence without applying a separate layer for business logic. This means that validation, transformation, or any other logic inherent to information processing is directly integrated into the routing and event handling logic.
+
+This 2 main problems derivate other drawbacks such as the level of difficulty to implement different types of repositories, in the next sections it will be explain how to solve this situation efficiently.
+
 ##### Solution chosen
 
+**Handlers Should Not Directly Access Repositories**
+
+Handlers delegate all data-related operations to a dedicated business logic layer (the DataService). The handlers simply:
+
+- Process and validate incoming events using middleware.
+
+- Call the corresponding method on the service layer (e.g., saveData() or getData()).
+
+- Return a formatted response.
+
+This separation means handlers are now free of any direct dependency on repository implementations.
+
+**Introduce a Business Logic Layer Between Handlers and Repositories**
+
+Layered Architecture:
+- The code now have a DataService that encapsulates all business rules and data transformations. This service performs any necessary logic before delegating calls to the repository.
+
+Decoupling:
+- The service layer acts as a mediator between the handlers and the repositories. Any change in business logic or validation is handled within the service, thereby isolating the HTTP or event-handling details in the handlers.
+
+**Support Multiple Repositories**
+
+Repository Interface:
+- A common interface (DataRepository) defines the methods (saveData, getData, etc.) that all repository implementations must adhere to.
+
+Repository Factory (Factory Method Pattern):
+- The RepositoryFactory allows to decide at runtime (or via configuration) which concrete repository implementation to instantiate—whether it be a database repository (DBRepository), an API-based repository (APIRepository), or any other.
+
+Flexibility & Extensibility:
+- With this setup, the DataService only interacts with the repository through the common interface. Adding or switching repository types requires no changes to the handlers or even to the service layer logic.
+
+**Ensure Transparency for Handlers**  
+
+Thin, Focused Handlers:
+- Handlers now perform only the minimal duties necessary for processing events: running middleware, delegating to the service, and formatting responses. They are completely agnostic about where or how the data is stored.
+
+Modular, Decoupled Components:
+- The three layers (handlers, service, repositories) form clear boundaries. This modular design is ideal for serverless environments:
+
+- Handlers can be deployed as individual functions (e.g., AWS Lambda).
+
+- Service layers encapsulate the business rules so they can be independently maintained or even moved to separate microservices if needed.
+
 ##### Advantages over the original template
+
+The more notorious advantages or benefits compared to the original template are: 
+
+- Decoupling:
+By separating business logic from data access, the direct dependency between layers is reduced. This makes maintenance, unit testing, and code evolution easier.
+
+- Flexibility:
+With dependency injection and the use of interfaces, the system can support different repositories (multiple data sources) without modifying the core logic.
+
+- Reusability and Scalability:
+Business logic encapsulated in services can be reused across other handlers or processes, and adding new features becomes simpler.
+
+- Readiness for Serverless and Microservices Environments:
+A decoupled architecture allows individual parts of the system to be deployed and scaled independently, aligning with the ephemeral and distributed nature of these environments.
 
 #### POC Step 6 - Deployment & Testing
 
