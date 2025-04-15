@@ -1,39 +1,14 @@
-// export const exampleHandlerTwo = async (event: any) => {
-//     // Import the middleware and repository
-//     const { exampleMiddleware } = require('../middleware/exampleMiddleware');
-//     const { ExampleRepository } = require('../repository/exampleRepository');
+// Responsible for handling request related to gettting data
+import { GetDataHandler } from './data/getDataHandler';
+import { DataService } from '../services/dataService';
+import { RepositoryType } from '../repository/RepositoryFactory';
 
-//     // Use the middleware to process the request
-//     const processedEvent = exampleMiddleware(event);
+// Instantiate the service with the desired repository type.
+// For example, RepositoryType.DB or RepositoryType.API.
+const dataService = new DataService(RepositoryType.DB);
 
-//     // Create an instance of the repository
-//     const repository = new ExampleRepository();
+const getDataHandler = new GetDataHandler(dataService);
 
-//     // Perform an operation using the repository
-//     const result = await repository.getData(processedEvent);
-
-//     // Return the result
-//     return {
-//         statusCode: 200,
-//         body: JSON.stringify(result),
-//     };
-// };
-
-import { BaseHandler } from './baseHandler';
-import { DataRepository } from '../types';
-import { LoggingMiddleware } from '../middleware/loggingMiddleware';
-
-export class GetDataHandler extends BaseHandler {
-  constructor(repository: DataRepository) {
-    // No mandatory middleware for get operations
-    super(repository);
-    
-    // Only add logging middleware - it's optional
-    this.middlewareChain
-      .addMiddleware(new LoggingMiddleware());
-  }
-  
-  protected async executeOperation(processedEvent: any): Promise<any> {
-    return await this.repository.getData(processedEvent);
-  }
-}
+export const getData = async (event: any) => {
+  return await getDataHandler.handle(event);
+};

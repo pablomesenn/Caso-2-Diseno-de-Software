@@ -1,14 +1,10 @@
-import { DataRepository, HttpResponse, MiddlewareChain } from '../types';
-import { MiddlewareChainImpl } from '../middleware/middlewareChain';
-import { MiddlewareType } from '../middleware/middlewareTypes';
-import { Logger } from '../utils/logger';
+import { DataRepository, HttpResponse, MiddlewareChain } from '../../types';
+import { MiddlewareChainImpl } from '../../middleware/middlewareChain';
 
 export abstract class BaseHandler {
   protected middlewareChain: MiddlewareChain;
-  protected repository: DataRepository;
 
-  constructor(repository: DataRepository, mandatoryMiddlewareTypes: string[] = []) {
-    this.repository = repository;
+  constructor(mandatoryMiddlewareTypes: string[] = []) {
     this.middlewareChain = new MiddlewareChainImpl(mandatoryMiddlewareTypes);
   }
 

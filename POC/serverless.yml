@@ -9,14 +9,14 @@ provider:
 
 functions:
   exampleHandlerOne:
-    handler: src/handlers/exampleHandlerOne.exampleHandlerOne
+    handler: src/handlers/example/exampleHandlerOne.saveData
     events:
       - http:
           path: example-one
           method: post
 
   exampleHandlerTwo:
-    handler: src/handlers/exampleHandlerTwo.exampleHandlerTwo
+    handler: src/handlers/example/exampleHandlerTwo.getData
     events:
       - http:
           path: example-two
