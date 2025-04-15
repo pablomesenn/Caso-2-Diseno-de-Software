@@ -489,243 +489,170 @@ Common code has been extracted to the `BaseHandler` class following DRY principl
 
 #### POC Step 2 - README.md Fixes & Adjustments
 
-#### POC Step 4 - Optional & Mandatory Middleware (Design Pattern Required)
+##### Challenge faced
+The original template’s README lacked documentation on common AWS CLI errors and their possible solutions. This led to confusion during deployment and issues related to AWS functionality within the project.
 
-#### POC Step 5 - Repository Layer Improvements (Decoupling & Reusability)
+##### Solution chosen
 
-##### Challenged Faced
+Additional documentation was added to the README to address these common AWS CLI errors and provide guidance on how to resolve them.
 
-In the original state of the template provided previously in the documentation there are 2 main problems:
+##### Advantages over original template
 
-1- Handlers consume directly the repositories, generating a strong coupling. This means that any changes to the logic of accesing the data or in the data source force changes to the handler code as well.
+The updated README offers clearer and more comprehensive information, helping users troubleshoot AWS-related issues more effectively and improving the overall deployment experience.
 
-2- There is no middle layer for business logic. The handler assumes all extra responsabilities while processing directly the request and delegating data persistence without applying a separate layer for business logic. This means that validation, transformation, or any other logic inherent to information processing is directly integrated into the routing and event handling logic.
+#### POC Step 3 - Logger Improvements (Design Pattern Required)
 
-This 2 main problems derivate other drawbacks such as the level of difficulty to implement different types of repositories, in the next sections it will be explain how to solve this situation efficiently.
+##### Challenge faced
+
+The original template used console.log() for logging, which is inadequate for production environments. It lacks features like log levels, structured formatting, and integration with centralized logging systems, making debugging and monitoring difficult in deployed applications.
 
 ##### Solution Chosen
 
-###### 1. Introduce a business logic midle layer (Services)
+We implemented a Logger interface and a CloudWatchLogger class, utilizing the AWS SDK to send logs to CloudWatch Logs. This adheres to the Strategy pattern, allowing for different logging implementations in the future.
 
-Introducing a services layer that function as an intermediary between the handler and the repository. This layer will ber in charge of:
+##### Advantages over the original template
 
-- Validate and transform the data.
-- Coordinate logic business (such as validation rules or coordinations with other repositories).
-- Coordinate calls to multiple repositories if needed.
+1. Provides structured logging with log levels (info, error, etc.) for better filtering and analysis.
 
-```
-class ExampleService {
+2. Integrates seamlessly with AWS CloudWatch for centralized log management, enabling efficient monitoring and troubleshooting in production.
 
-private repository:IExampleRepository
+3. The Logger interface promotes flexibility, allowing for easy switching to other logging services or methods (e.g., file logging) without modifying the application's core logic.
 
-constructor(repository) {
-   this.repository = repository; 
-}
+4. Improves maintainability by encapsulating logging logic within dedicated classes.
 
-async processAndSaveData(data){
-}
-   // Could code some validations if needed
-   if (!data || typeof data !== "object") {
-      throw new Error("Datos inválidos.");
-   }
+#### POC Step 4 - Optional & Mandatory Middleware (Design Pattern Required)
 
-   // Can code aditional business logic before data persist.
+##### Challenge faced
 
-   // Llamada al repositorio para persistir los datos.
-   return await this.repository.saveData(data);
-}
+The challenge lies in designing a flexible and extensible middleware architecture that supports both optional and mandatory components. Middleware should be easily chainable, allowing developers to attach multiple layers of logic such as logging, validation, or transformation. However, certain middleware—like authentication or security checks—must always be executed to ensure the integrity and safety of the system. 
 
-export default ExampleService;
-```
-###### 2. Upgrades to repository class
+The core problem is finding a way to enforce the presence of these mandatory middleware components without compromising the modularity and reusability of the middleware chain. This requires applying an appropriate design pattern that guarantees required middleware are included, while still supporting the dynamic composition of optional middleware.
 
-Define an interface for the repository class that declares the methods that must be implemented.
+##### Solution chosen
 
-```
-export interface IRepository {
-  getData(): any[];
-  saveData(data: any): Promise<any>;
-}
+###### Here is the system flow:
+  A request comes in to `exampleHandlerOne`
 
-import { IRepository } from './Interface';
+  **The handler**:
 
-export class ExampleRepository implements IRepository {
-  private dataStore: any[] = [];
+  1. Creates a repository instance
+  2. Creates a SaveDataHandler with the repository
+  3. Calls handle on the handler with the event
 
-  getData(): any[] {
-    return this.dataStore;
-  }
 
-  async saveData(data: any): Promise<any> {
-    this.dataStore.push(data);
-    return data;
-  }
-}
-```
-###### 3. Modify the handler code to decouple the repository
+  **The `SaveDataHandler`**:
 
-The handler should interact only with the service layer. This way, any business logic or validation rules are delegated to the appropriate layer.
+  1. Inherits from AuthenticatedHandler which requires authentication middleware
+  2. Configures its middleware chain with logging, validation, and authentication
 
-```
-export const exampleHandlerOne = async (event: any) => {
-   try {
-   // Import the middleware and repository
-   const { exampleMiddleware } = require('../middleware/exampleMiddleware');
-   const { ExampleRepository } = require('../repository/exampleRepository');
-   const { ExampleService } = require('../services/exampleService');
 
-   // Process the request using the middleware
-   const processedEvent = exampleMiddleware(event);
+  **The `handle` method**:
 
-   // Create an instance of the repository, then inject the dependency to the service
-   const repository = new ExampleRepository();
-   const service = new ExampleService(repository);
+  1. Processes the event through the middleware chain
+  2. The chain verifies all mandatory middleware (authentication) is present
+  3. Each middleware processes the event in sequence
+  4. The handler executes its operation using the processed event
+  5. The handler returns a success or error response
 
-   // Perform an operation, e.g., saving data
-   const result = await service.processAndSaveData(processedEvent);
 
-   return {
-      statusCode: 200,
-      body: JSON.stringify({
-         message: 'Data saved successfully',
-         data: result,
-      }),
-   };
-   } catch (error) {
-    // Manejo de errores centralizado
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: error.message }),
-    };
-  }
-};
-```
-###### 4. Support for multiple data sources (repositories)
 
-The principle idea for the purpose of the code being capable of support multiple data repositories is to apply the Factory design pattern. This way we can have multiple classes representing each repository or data source and via the Factory control which one of this classes instance is going to be created and used. All of this using the IRepository mentioned earlier in this document.
+###### Key Design Patterns Used
 
-```
-// The different classes of the differents source of data
+  1. **Chain of Responsibility**: Middleware components form a chain that processes events in sequence.
+  2. **Template Method**: `BaseHandler` defines the algorithm structure while subclasses implement specific steps.
+  3. **Composition**: Handlers compose middleware chains rather than inheriting behavior.
+  4. **Factory Method**: Each handler creates and configures its own middleware chain.
 
-// repository/ExampleRepository.js
-export class ExampleRepository implements IRepository {
-  constructor() {
-    this.dataStore = [];
-  }
+##### Advantages over original template
 
-  getData() {
-    return this.dataStore;
-  }
+  - Flexibility: Each handler can have its own middleware configuration.
+  - Extensibility: New middleware can be added without changing existing code.
+  - Enforcement: Mandatory middleware can be enforced for specific handler types.
+  - Separation of Concerns: Each component has a clear, single responsibility.
+  - Testability: Components can be tested in isolation with mock dependencies.
 
-  async saveData(data) {
-    this.dataStore.push(data);
-    return data;
-  }
-}
+  ###### Common Workflows
+    #### Adding a New Middleware
 
-// repository/DatabaseRepository.js
-export class DatabaseRepository implements IRepository {
-  getData() {
-    // Simular una consulta a DB
-    return ['from-database'];
-  }
+    1. Create a new class that extends `BaseMiddleware`
+    2. Implement the `processEvent` method
+    3. Add a new type to `MiddlewareType` if needed
 
-  async saveData(data) {
-    // Simular un insert en DB
-    console.log('Data saved to DB:', data);
-    return data;
-  }
-}
-```
+    #### Creating a New Handler
 
-```
-// Implement the main factory class and the concrete factories
-import { IRepository } from './Interface';
+    1. Decide if it needs authentication:
 
-export class RepositoryFactory {
-   abstract createRepository(): IRepository;
-}
+      If yes, extend `AuthenticatedHandler`
+      If no, extend `BaseHandler`
+    2. Configure its middleware chain in the constructor
+    3. Implement the `executeOperation` method
 
-// repository/factories/ExampleRepositoryFactory.ts
-import { RepositoryFactory } from './RepositoryFactory';
-import { ExampleRepository } from '../ExampleRepository';
+    #### Making a Middleware Mandatory
 
-export class ExampleRepositoryFactory extends RepositoryFactory {
-  createRepository() {
-    return new ExampleRepository();
-  }
-}
+      Pass its type in the constructor of handlers that require it:
 
-// repository/factories/DatabaseRepositoryFactory.ts
-import { RepositoryFactory } from './RepositoryFactory';
-import { DatabaseRepository } from '../DatabaseRepository';
+      ```
+      super(repository, [MiddlewareType.YOUR_MIDDLEWARE]);
+      ```
+     This can is used in `authenticatedHandler.ts`.
 
-export class DatabaseRepositoryFactory extends RepositoryFactory {
-  createRepository() {
-    return new DatabaseRepository();
-  }
-}
-```
+#### POC Step 5 - Repository Layer Improvements (Decoupling & Reusability)
 
-```
-// Factory selector
+##### Challenge faced
 
-// repository/factories/RepositoryFactorySelector.ts
-import { RepositoryFactory } from './RepositoryFactory';
-import { ExampleRepositoryFactory } from './ExampleRepositoryFactory';
-import { DatabaseRepositoryFactory } from './DatabaseRepositoryFactory';
+In the original state of the template provided previously in the documentation there are 2 main problems:
 
-export function getRepositoryFactory(): RepositoryFactory {
-  const type = process.env.DATA_SOURCE || 'memory';
+- Handlers consume directly the repositories, generating a strong coupling. This means that any changes to the logic of accesing the data or in the data source force changes to the handler code as well.
 
-  switch (type) {
-    case 'memory':
-      return new ExampleRepositoryFactory();
-    case 'database':
-      return new DatabaseRepositoryFactory();
-    default:
-      throw new Error(`Unknown repository type: ${type}`);
-  }
-}
-```
+- There is no middle layer for business logic. The handler assumes all extra responsabilities while processing directly the request and delegating data persistence without applying a separate layer for business logic. This means that validation, transformation, or any other logic inherent to information processing is directly integrated into the routing and event handling logic.
 
-```
-// Modify the handler code to use the factory design pattern
-export const exampleHandlerOne = async (event: any) => {
-   try {
-   // Import the middleware and repository
-   const { exampleMiddleware } = require('../middleware/exampleMiddleware');
-   const { ExampleRepository } = require('../repository/exampleRepository');
-   const { ExampleService } = require('../services/exampleService');
+This 2 main problems derivate other drawbacks such as the level of difficulty to implement different types of repositories, in the next sections it will be explain how to solve this situation efficiently.
 
-   // Process the request using the middleware
-   const processedEvent = exampleMiddleware(event);
+##### Solution chosen
 
-   // Create an instance of the repository
-   const factory = getRepositoryFactory();
-   const repository = factory.createRepository();
-   const service = new ExampleService(repository)
+**Handlers Should Not Directly Access Repositories**
 
-   // Perform an operation, e.g., saving data
-   const result = await service.processAndSaveData(processedEvent);
+Handlers delegate all data-related operations to a dedicated business logic layer (the DataService). The handlers simply:
 
-   return {
-      statusCode: 200,
-      body: JSON.stringify({
-         message: 'Data saved successfully',
-         data: result,
-      }),
-   };
-   } catch (error) {
-    // Manejo de errores centralizado
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: error.message }),
-    };
-  }
-};
+- Process and validate incoming events using middleware.
 
-```
+- Call the corresponding method on the service layer (e.g., saveData() or getData()).
+
+- Return a formatted response.
+
+This separation means handlers are now free of any direct dependency on repository implementations.
+
+**Introduce a Business Logic Layer Between Handlers and Repositories**
+
+Layered Architecture:
+- The code now have a DataService that encapsulates all business rules and data transformations. This service performs any necessary logic before delegating calls to the repository.
+
+Decoupling:
+- The service layer acts as a mediator between the handlers and the repositories. Any change in business logic or validation is handled within the service, thereby isolating the HTTP or event-handling details in the handlers.
+
+**Support Multiple Repositories**
+
+Repository Interface:
+- A common interface (DataRepository) defines the methods (saveData, getData, etc.) that all repository implementations must adhere to.
+
+Repository Factory (Factory Method Pattern):
+- The RepositoryFactory allows to decide at runtime (or via configuration) which concrete repository implementation to instantiate—whether it be a database repository (DBRepository), an API-based repository (APIRepository), or any other.
+
+Flexibility & Extensibility:
+- With this setup, the DataService only interacts with the repository through the common interface. Adding or switching repository types requires no changes to the handlers or even to the service layer logic.
+
+**Ensure Transparency for Handlers**  
+
+Thin, Focused Handlers:
+- Handlers now perform only the minimal duties necessary for processing events: running middleware, delegating to the service, and formatting responses. They are completely agnostic about where or how the data is stored.
+
+Modular, Decoupled Components:
+- The three layers (handlers, service, repositories) form clear boundaries. This modular design is ideal for serverless environments:
+
+- Handlers can be deployed as individual functions (e.g., AWS Lambda).
+
+- Service layers encapsulate the business rules so they can be independently maintained or even moved to separate microservices if needed.
+
 ##### Advantages over the original template
 
 The more notorious advantages or benefits compared to the original template are: 
@@ -741,6 +668,22 @@ Business logic encapsulated in services can be reused across other handlers or p
 
 - Readiness for Serverless and Microservices Environments:
 A decoupled architecture allows individual parts of the system to be deployed and scaled independently, aligning with the ephemeral and distributed nature of these environments.
+
+#### POC Step 6 - Deployment & Testing
+
+##### Challenge faced
+The original template lacked robust testing and deployment procedures. This can lead to increased risk of bugs in production and make it difficult to automate the deployment process.
+
+##### Solution chosen
+We implemented unit tests using Jest to verify handler logic. For handlers interacting with the database, we outlined the structure for integration tests, emphasizing the importance of using a separate test database. We also detailed how to use the Serverless Framework for deployment and Postman for API testing.
+
+##### Advantages over the original template
+
+1. Increases code reliability by implementing automated unit tests that catch bugs early in the development cycle.
+2. Provides a clear strategy for integration testing, ensuring that handlers interact correctly with external resources like the database.
+3. Leverages the Serverless Framework to streamline deployment to AWS, automating the packaging and deployment of code.
+4. Utilizes Postman to simplify API testing, enabling developers to easily send requests and verify responses.
+5. Improves the overall development workflow by introducing best practices for testing and deployment.
 
 ### Backend Architecture
 
@@ -1070,3 +1013,124 @@ An API Gateway will not be used in this project because the application is desig
 ## Architecture Design
 
 ## Architecture Compliance Matrix
+
+
+
+|                            | N-layer Architecture | Flutter Mobile | React Web | Firebase Auth | Monolithic-MVC with Hybrid REST/GraphQL | PostgreSQL | TensorFlow | GCP Cloud Infrastructure | SOLID & Design Patterns |
+|----------------------------|----------------------|----------------|-----------|---------------|----------------------------------------|------------|------------|--------------------------|-------------------------|
+| **Non-Functional Requirements** |                  |                |           |               |                                        |            |            |                          |                         |
+| Scalability                |                     | ❌             | ❌        | ❌            | ❌                                     | ❌         | ❌         | ❌                       | ❌                      |
+| Security                   |                     |               |          | ❌            | ❌                                     | ❌         |           | ❌                       | ❌                      |
+| Performance                | ❌                   | ❌             | ❌        |              | ❌                                     | ❌         | ❌         | ❌                       | ❌                      |
+| Compatibility              | ❌                   | ❌             | ❌        | ❌            | ❌                                     | ❌         |           | ❌                       | ❌                      |
+| Usability                  |                     | ❌             | ❌        | ❌            |                                       |           |           |                        |                        |
+| **Top Functional Requirements** |                 |                |           |               |                                        |            |            |                          |                         |
+| Task Recording             | ❌                   | ❌             | ❌        |             | ❌                                     | ❌         | ❌         | ❌                       | ❌                      |
+| Real-Time Assistance       | ❌                   | ❌             | ❌        |              | ❌                                     |           | ❌         | ❌                       | ❌                      |
+| Enterprise & User Management | ❌                |               |          | ❌            | ❌                                     | ❌         |           | ❌                       | ❌                      |
+
+
+
+### Non-Functional Requirements
+#### Scalability
+
+  **N-layer Architecture**: While the separation of concerns enables some scalability, the monolithic nature may limit horizontal scaling beyond a certain point. Even with separation of concerns, everything is still tightly bundled. This causes issues when trying to scale horizontally (i.e., adding more machines to handle more load).
+
+  **Flutter Mobile**: Efficient background processing capabilities support handling increased user load without performance degradation.
+  **React Web**: React's virtual DOM and component architecture enable efficient rendering even with large amounts of data.
+  **Firebase Auth**: Firebase Authentication is designed to handle millions of users with automatic scaling.
+  **Monolithic-MVC with Hybrid REST/GraphQL**: GraphQL optimizes data retrieval, reducing bandwidth and enabling selective data fetching for better scaling.
+  **PostgreSQL**: Supports both vertical scaling and read replicas for handling increased load.
+  **TensorFlow**: Capable of distributed processing and hardware acceleration for scaling machine learning tasks.
+  **GCP Cloud Infrastructure**: Provides auto-scaling capabilities for handling the required growth from 900 to 500,000 users.
+  **SOLID & Design Patterns**: Promotes loose coupling and high cohesion, facilitating easier scaling and maintenance.
+
+#### Security
+
+  **N-layer Architecture**: Provides some security through separation of concerns, but requires additional security measures at each layer.
+  **Flutter Mobile**: Offers some built-in security features but requires additional implementation for encryption and secure storage.
+  **React Web**: Similar to Flutter, needs additional security implementations for client-side security.
+  **Firebase Auth**: Fully supports 2FA, secure session management, and complies with security standards.
+  **Monolithic-MVC with Hybrid REST/GraphQL**: The MVC pattern allows for centralized security controls and GraphQL enables fine-grained access control.
+  **PostgreSQL**: Provides strong data encryption, role-based access control, and audit logging capabilities.
+  **TensorFlow**: Limited built-in security features; requires additional measures to secure AI/ML pipelines.
+  **GCP Cloud Infrastructure**: Offers comprehensive security features including encryption at rest and in transit.
+  **SOLID & Design Patterns**: Design patterns like Strategy for authentication enable flexible security implementation.
+
+#### Performance
+
+  **N-layer Architecture**: Clean separation enables optimizing each layer independently for performance.
+  **Flutter Mobile**: Native-like performance and efficient background processing capabilities.
+  **React Web**: Virtual DOM minimizes DOM operations for responsive UI performance.
+  **Firebase Auth**: While generally fast, network latency can occasionally exceed the 3-second response time requirement.
+  **Monolithic-MVC with Hybrid REST/GraphQL**: GraphQL optimizes network requests by fetching only needed data.
+  **PostgreSQL**: Provides indexing and query optimization for fast data retrieval.
+  **TensorFlow**: GPU acceleration enables high-performance AI processing without affecting device performance.
+  **GCP Cloud Infrastructure**: High-performance compute resources and global CDN ensure fast response times.
+  **SOLID & Design Patterns**: Patterns like Repository pattern enable caching and optimized data access.
+
+#### Compatibility
+
+  **N-layer Architecture**: Platform-agnostic design enables consistent functionality across different environments.
+  **Flutter Mobile**: Single codebase supports both iOS and Android platforms.
+  **React Web**: Works across all modern browsers supporting the compatibility requirement.
+  **Firebase Auth**: Available on all required platforms (Web, iOS, Android, macOS, Windows).
+  **Monolithic-MVC with Hybrid REST/GraphQL**: Standard protocols ensure compatibility with various clients.
+  **PostgreSQL**: Available on all major platforms with consistent behavior.
+  **TensorFlow**: Some platform-specific optimizations may be required for consistent performance.
+  **GCP Cloud Infrastructure**: Platform-agnostic cloud services accessible from any environment.
+  **SOLID & Design Patterns**: Abstraction principles ensure consistency across platforms.
+
+#### Usability
+
+  **N-layer Architecture**: Indirectly affects usability through system responsiveness but doesn't directly address user experience.
+  **Flutter Mobile**: Rich UI components and consistent cross-platform experience enhance usability.
+  **React Web**: Component-based architecture facilitates creating intuitive interfaces.
+  **Firebase Auth**: Provides pre-built, user-friendly authentication flows.
+  **Monolithic-MVC with Hybrid REST/GraphQL**: Impacts UI responsiveness but doesn't directly address user experience design.
+  **PostgreSQL**: Database choice doesn't directly impact usability.
+  **TensorFlow**: ML framework doesn't directly impact user interface usability.
+  **GCP Cloud Infrastructure**: Can impact performance and thus indirectly affect usability, but no direct impact on UI/UX.
+  **SOLID & Design Patterns**: Can facilitate better code organization but doesn't directly improve end-user experience.
+
+### Top Functional Requirements
+#### Task Recording
+
+  **N-layer Architecture**: Separation of concerns enables efficient recording, processing, and storage of tasks.
+  **Flutter Mobile**: Background processing capabilities enable recording voice and screen interactions.
+  **React Web**: Supports recording tasks through web interfaces effectively.
+  **Firebase Auth**: Provides user identification for recordings but no direct support for the recording functionality.
+  **Monolithic-MVC with Hybrid REST/GraphQL**: REST endpoints efficiently handle recording submissions while GraphQL optimizes retrieval.
+  **PostgreSQL**: Structured storage for recorded tasks and associated metadata.
+  **TensorFlow**: Processes voice recordings and extracts key actions for workflow generation.
+  **GCP Cloud Infrastructure**: Cloud storage and processing power for handling recordings.
+  **SOLID & Design Patterns**: Factory and Strategy patterns enable flexible recording implementation across platforms.
+
+#### Real-Time Assistance
+
+  **N-layer Architecture**: Service layer can efficiently detect tasks and provide assistance.
+  **Flutter Mobile**: Supports background monitoring and real-time notifications.
+  **React Web**: Supports real-time assistance through responsive UI updates.
+  **Firebase Auth**: Ensures only authorized users receive assistance but doesn't provide assistance functionality.
+  **Monolithic-MVC with Hybrid REST/GraphQL**: GraphQL subscriptions can enable real-time assistance features.
+  **PostgreSQL**: Stores assistance data but may require additional caching for real-time performance.
+  **TensorFlow**: AI capabilities identify when users need assistance and generate guidance.
+  **GCP Cloud Infrastructure**: Pub/Sub enables real-time event processing for timely assistance.
+  **SOLID & Design Patterns**: Observer pattern facilitates event-based assistance triggers.
+
+#### Enterprise & User Management
+
+  **N-layer Architecture**: Clear separation allows for comprehensive user and role management.
+  **Flutter Mobile**: Provides UI for user management but requires backend integration for enterprise features.
+  **React Web**: Similar to Flutter, provides UI but depends on backend for complete enterprise management.
+  **Firebase Auth**: Fully supports user authentication, roles, and permissions management.
+  **Monolithic-MVC with Hybrid REST/GraphQL**: Facilitates complex user and permission queries required for enterprise management.
+  **PostgreSQL**: Relational database well-suited for modeling complex organizational hierarchies and permissions.
+  **TensorFlow**: AI framework has no direct role in user management functionality.
+  **GCP Cloud Infrastructure**: Provides secure, scalable infrastructure for enterprise user management.
+  **SOLID & Design Patterns**: Patterns like Role-Based Access Control can be implemented effectively.
+
+
+<br><br><br><br><br><br>
+
+<p align="center">End of document.</p>

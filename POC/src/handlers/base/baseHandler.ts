@@ -1,5 +1,9 @@
-import { DataRepository, HttpResponse, MiddlewareChain } from '../../types';
+import { HttpResponse, MiddlewareChain } from '../../types';
 import { MiddlewareChainImpl } from '../../middleware/middlewareChain';
+import { Logger } from '../../utils/logger';
+import { CloudWatchLogger } from '../../utils/cloudwatch-logger';
+
+const logger: Logger = new CloudWatchLogger(process.env.LOG_GROUP_NAME || '/aws/lambda/my-handler', "my-log-stream");
 
 export abstract class BaseHandler {
   protected middlewareChain: MiddlewareChain;
@@ -36,9 +40,14 @@ export abstract class BaseHandler {
 
   public async handle(event: any): Promise<HttpResponse> {
     try {
+      logger.log('info', 'Existing handler started', { event });
       const processedEvent = this.middlewareChain.process(event);
       const result = await this.executeOperation(processedEvent);
-      return this.createSuccessResponse(result);
+      logger.log('info', 'Existing handler started', { event });
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'Success', data: result })
+      };
     } catch (error) {
       return this.createErrorResponse(error as Error);
     }
