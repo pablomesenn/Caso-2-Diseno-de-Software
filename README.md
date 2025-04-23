@@ -87,8 +87,6 @@ The Firebase setup begins by initializing a connection to the backend using cred
 
 ![image](https://github.com/user-attachments/assets/433655be-9a3d-4b4d-ba8e-82222f03deeb)
 
-(Image for illustrative purpose, empty information)
-
 With this in mind all that is left is to ensure correct communication with the authentication service we just initialize and the frontend of our project. By combining Firebase’s authentication methods with React’s state management and routing, the code creates a cohesive system. Firebase handles backend tasks (credential validation, session persistence), while React components manage UI, state, and user interactions. This separation of concerns ensures scalability—additional features (e.g., social logins) can be added without disrupting core logic.
 
 #### FrontEnd design and customizablity
@@ -210,28 +208,43 @@ A Postman collection has been created to facilitate the API calls required for t
 
 Architecture: N-layer
 
-Technology Stack:
+Technology Stack (Frontend Focus):
 
-- Mobile Frontend: Flutter (Hybrid): Chosen for its background processing capabilities and consistent real-time assistance across Android and iOS.
-- Web Frontend: React (Likely Client-Side Rendering (CSR)) - Selected for performance and scalability, with the possibility of using Vite as the build tool.
-- Backend: Python (for AI), Node.js (for handling multiple connections and frontend communication), REST (API).
-- Database: PostgreSQL - Chosen for compatibility with other technologies.
-- AI Development: TensorFlow - For voice command processing and data flow generation.
-- Hosting: Firebase
-- CI/CD:  GitHub Actions - For automating integration and deployment.
-- QA: pytest, flutter test, React Testing Library, Appium - For comprehensive testing.
-Web App Rendering: Primarily Client-Side Rendering (CSR).
-Mobile Development: Hybrid (Flutter).
+Mobile Frontend: Flutter (Hybrid)
+
+Reason: Selected for its ability to deliver consistent real-time assistance across Android and iOS with a single codebase. Flutter's widget-based architecture enables rapid UI development and supports background processing for features like notifications or real-time updates.
+
+Web Frontend: React (Client-Side Rendering, CSR, with potential for Server-Side Rendering, SSR, or Static Site Generation, SSG)
+
+Reason: Chosen for its performance, scalability, and rich ecosystem. React's component-based architecture allows for reusable UI elements, improving development speed and maintainability.
+
+Hosting: Firebase
+
+Frontend Relevance: Firebase Hosting serves static assets (HTML, CSS, JS) for the React web app and Flutter web builds. It also provides CDN acceleration for fast content delivery and supports custom domains.
+
+CI/CD: GitHub Actions
+
+Frontend Relevance: Automates the build, test, and deployment of Flutter and React codebases. For example, it runs flutter build for mobile apps and npm run build for the React app, ensuring consistent releases.
+
+QA:
+
+Flutter Test: For unit and widget testing in Flutter, ensuring UI components behave as expected across devices.
+
+React Testing Library: For testing React components, focusing on user interactions and rendering correctness.
+
+Appium: For end-to-end testing of the mobile app, simulating real user scenarios on Android and iOS.
 
 Key Points:
 
-- The team has opted for an N-layer architecture.
-- Flutter is the chosen technology for mobile development.
-- React is selected for the web frontend, with Vite used as the build tool.
-- Python will handle the backend API endpoints and application logic.
-- Python will also be used for AI development.
-- Firebase will be used for hosting the application.
+The N-layer architecture separates the frontend from other layers, ensuring modularity and scalability.
 
+Flutter is the cornerstone for mobile development, enabling a unified codebase for Android and iOS with Firebase integration for real-time features.
+
+React powers the web frontend, leveraging Vite for fast builds and a modern development experience.
+
+Firebase Hosting simplifies deployment for both Flutter and React, with GitHub Actions automating the CI/CD pipeline.
+
+Comprehensive QA with Flutter Test, React Testing Library, and Appium ensures a robust and user-friendly frontend experience.
 
 ### Visual Components
 
