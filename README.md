@@ -826,7 +826,7 @@ This project is designed for a cloud based infraestructure with serverless compo
 
 ##### Hardware Demands and Cloud Machine Types
 1. Compute resourses
-  - AI and Machine Learning processing: TensoFlow workloads for voice command processing require GPU-accerated instances, meaning the employment of a graphics processing unit (GPU) along with a computer processing unit (CPU).
+  - AI and Machine Learning processing: TensorFlow workloads for voice command processing require GPU-accerated instances, meaning the employment of a graphics processing unit (GPU) along with a computer processing unit (CPU).
   - Backend services are needed, standard compute instances for Node.js and Python services.
   - Virtual machines from Google Cloud Platform like `n1-standard` for the Node.js services, `n1-highmem` for Pyhton AI processing, and `t2d-standard` for cost-efficient background processing.
 
@@ -869,8 +869,9 @@ This project is designed for a cloud based infraestructure with serverless compo
 
 1. Programming Languages
 
-  **Node.js**: It's a efficient languaje able to handle multiple connections, event-driven architecture which aligns with serverless model, it has a rich ecosystem of libraries too. It has very good support with GCP cloud functions and cloud run (deployment). 
-  **Python**: It has impressive campabilities for ML and AI through TensorFlow, ectensive data processing libraries which is a important key for Zathura.
+  **Node.js**: It's an efficient language able to handle multiple connections, event-driven architecture which aligns with serverless model, it has a big variety
+ of libraries too. It has very good support with GCP cloud functions and cloud run (deployment). 
+  **Python**: It has impressive compatibility for ML and AI through TensorFlow, extensive data processing libraries which is an important aspect for Zathura.
   On cloud it has native support in GCP's AI platform, with integration with BigQuery for analytics
 
 2. Frontend Frameworks
@@ -883,15 +884,15 @@ This project is designed for a cloud based infraestructure with serverless compo
 
 3. Database Technologies
 
-  **PostgresSQL**: It is a robust relational database, ACID complience, poweful capabilities.
-  It is fully managed in Cloud SQL, reucing operational overhead.
+  **PostgresSQL**: It is a robust relational database, ACID compliance, powerful capabilities.
+  It is fully managed in Cloud SQL, reducing operational overhead.
 
   **Firebase**: It has real time updates, offline support, serverless operations.
   Also native with GCP.
 
 4. DevOps & CI/CD
   
-  **Github Actions**: Makes automated workfows, community-built actions. 
+  **Github Actions**: Makes automated workflows, community-built actions. 
   It also has a strong integration with GCP deployment targets.
 
 5. AI/ML Frameworks
@@ -906,7 +907,7 @@ This project is designed for a cloud based infraestructure with serverless compo
   **Appium**: For automation testing for third party app interactions. 
 
 #### 3. Service vs Microservice
-Zathura is still an early in development application, taking this into account chosing to implement the single-service architecture is a strategic and realistic decision. This decision is justified by the following reasons:
+Zathura is still in early development, taking this into account chosing to implement the single-service architecture is a strategic and realistic decision. This decision is justified by the following reasons:
 
 ##### 1. Operational Simplicity
 
