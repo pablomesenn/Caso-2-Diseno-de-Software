@@ -5,22 +5,23 @@ Members: Pablo Mesén, Alonso Duran, Ana Hernández Muñoz, Jesus Valverde
 
 
 ## Index
-- [Description](#description:)
-- [Stack](#stack:")
+- [Description](#description)
+- [Stack](#stack)
 - [Frontend design specifications](#frontend-design-specifications)
-- [Client Architecture](#client-architecture)
-- [Visual Components](#visual-components)
-- [Object Design Patterns](#object-design-patterns)
-- [Project Structure](#project-structure)
+  - [Client Architecture](#client-architecture)
+  - [Visual Components](#visual-components)
+  - [Object Design Patterns](#object-design-patterns)
+  - [Project Structure](#project-structure)
 - [Proof of Concepts](#proof-of-concepts)
 - [Backend Architecture](#backend-architecture)
-- [1. REST, GraphQL, gRPC, Monolithic, or Monolithic-MVC?](#1-rest-graphql-grpc-monolithic-or-monolithic-mvc)
-- [2. Serverless, Cloud, On-Premise, or Hybrid?](#2-serverless-cloud-on-premise-or-hybrid)
-- [3. Service vs Microservice](#3-service-vs-microservice)
-- [4. Event-Driven, Queues, Brokers, ProducerConsumer PubSub](#4-event-driven-queues-brokers-producerconsumer-pubsub)
-- [5. API Gateway (Security & Scalability)?](#5-api-gateway-security--scalability)
+  - [1. REST, GraphQL, gRPC, Monolithic, or Monolithic-MVC?](#1-rest-graphql-grpc-monolithic-or-monolithic-mvc)
+  - [2. Serverless, Cloud, On-Premise, or Hybrid?](#2-serverless-cloud-on-premise-or-hybrid)
+  - [3. Service vs Microservice](#3-service-vs-microservice)
+  - [4. Event-Driven, Queues, Brokers, ProducerConsumer PubSub](#4-event-driven-queues-brokers-producerconsumer-pubsub)
+  - [5. API Gateway (Security & Scalability)?](#5-api-gateway-security--scalability)
 - [Data Layer Design for Zathura](#data-layer-design-for-zathura)
 - [Architecture Compliance Matrix](#architecture-compliance-matrix)
+
 
 
 ## Description:
