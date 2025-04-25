@@ -271,9 +271,9 @@ Toolkits and standards:
    - Mobile (Flutter): Material Design (Android), Cupertino (iOS)
 
 2. Frameworks and Standards
-   - Storybook (Web and Mobile): To document and test UI components in isolation.
-   - Material Design 3: Focus on accessibility and modern design.
-   - Apple Human Interface Guidelines: To follow iOS standards.
+   - Storybook (7.x) (Web and Mobile): To document and test UI components in isolation.
+   - Material Design 3 (3.7+): Focus on accessibility and modern design.
+   - Apple Human Interface Guidelines (The latest updates on the official Apple Human Interface Guidelines website): To follow iOS standards.
 
 
 ### Object Design Patterns
