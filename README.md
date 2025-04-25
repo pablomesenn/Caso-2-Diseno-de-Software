@@ -2,7 +2,28 @@
 
 Members: Pablo Mesén, Alonso Duran, Ana Hernández Muñoz, Jesus Valverde
 
-## Description: Write a brief description of the system, highlighting its strengths"
+
+
+## Index
+- [Description](#description:)
+- [Stack](#stack:")
+- [Frontend design specifications](#frontend-design-specifications)
+- [Client Architecture](#client-architecture)
+- [Visual Components](#visual-components)
+- [Object Design Patterns](#object-design-patterns)
+- [Project Structure](#project-structure)
+- [Proof of Concepts](#proof-of-concepts)
+- [Backend Architecture](#backend-architecture)
+- [1. REST, GraphQL, gRPC, Monolithic, or Monolithic-MVC?](#1-rest-graphql-grpc-monolithic-or-monolithic-mvc)
+- [2. Serverless, Cloud, On-Premise, or Hybrid?](#2-serverless-cloud-on-premise-or-hybrid)
+- [3. Service vs Microservice](#3-service-vs-microservice)
+- [4. Event-Driven, Queues, Brokers, ProducerConsumer PubSub](#4-event-driven-queues-brokers-producerconsumer-pubsub)
+- [5. API Gateway (Security & Scalability)?](#5-api-gateway-security--scalability)
+- [Data Layer Design for Zathura](#data-layer-design-for-zathura)
+- [Architecture Compliance Matrix](#architecture-compliance-matrix)
+
+
+## Description:
 
 The system is an AI-powered task recording and assistance platform designed to enhance real-time guidance within applications. Users can record tasks through voice commands and on-screen actions, creating a structured knowledge base. The platform leverages AI to analyze and replicate workflows, offering real-time assistance when users perform similar tasks.
 
@@ -13,8 +34,7 @@ Strengths:
 - Scalable Cloud Infrastructure – Handles a growing user base efficiently with cloud-based storage and processing.
 - Flexible Monetization Model – Offers free trials and scalable subscription plans for businesses.
 
-## Stack: write down the final stack to be use decided for the group"
-**Frontend:**
+## Stack:**
 - Mobile: Flutter (Android & iOS) – Ensures efficient background processing and real-time assistance.
 
 - Web: React – Provides high performance and scalability for web interactions.
