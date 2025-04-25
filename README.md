@@ -15,22 +15,24 @@ Strengths:
 
 ## Stack: write down the final stack to be use decided for the group"
 **Frontend:**
-- Mobile: Flutter (Android & iOS) – Ensures efficient background processing and real-time assistance.
+- Mobile: Flutter 3.19.x (Android & iOS) – Ensures efficient background processing and real-time assistance.
 
-- Web: React – Provides high performance and scalability for web interactions.
+- Web: React 18.2.x – Provides high performance and scalability for web interactions.
 
 **Backend:**
-- Node.js: Manages multiple connections efficiently and integrates with the frontend.
+- Node.js 20.x: Handles all incoming REST and GrapQL requests. Connects to the PostgreSQL database. Implements general business logic (authentication, user management, file uploads, task creation). Orchestrates calls to external modules like the AI services handled by Python.
 
-- Python: Specializes in AI-based processing and task automation.
+- Python 3.11.x (AI Microservice): AI/ML processing. Processing voice commands, running machine learning models, generating automating tasks based on AI results.  
 
-- REST & GraphQL: REST handles traditional backend operations, while GraphQL optimizes queries for efficient data retrieval.
+- REST: For structured, transactional, and service-oriented operations. Authentication and registration, file uploads, calling external services (payment gateways), webhooks, internal microservice communication (between Node.js and Python).
+
+- GraphQL: User-specific data views, avoiding overfetching and underfectching, rich querying for dashboards.
 
 **Database:**
-- PostgreSQL: Chosen for its robust compatibility with the selected technologies.
+- PostgreSQL 16.x: Chosen for its robust compatibility with the selected technologies.
 
 **AI & Machine Learning:**
-- TensorFlow: Powers voice command processing and automated task generation.
+- TensorFlow 2.16.x: Powers voice command processing and automated task generation.
 
 **Cloud & Hosting:**
 - Google Cloud Platform (GCP): Ensures seamless integration with Firebase and scalable cloud services.
@@ -39,8 +41,8 @@ Strengths:
 - GitHub Actions: Automates integration and deployment workflows.
 
 **Quality Assurance:**
-- pytest, flutter test, react testing library: Covers unit and integration testing for different platforms.
-- Appium: Enables mobile automation testing, especially for third-party app interactions.
+- pytest 8.x, flutter test, react testing library: Covers unit and integration testing for different platforms.
+- Appium 2.x: Enables mobile automation testing, especially for third-party app interactions.
 
 ## Frontend design specifications
 
