@@ -280,6 +280,18 @@ Toolkits and standards:
 
 ![UML class (3)](https://github.com/user-attachments/assets/d7fe7242-5131-46d0-ae20-d9c4af49e7a3)
 
+#### Additional information related to the UML diagram
+
+##### Why compression and encryption?
+
+The extensibility and flexibility that the Decorator pattern brings to the system are crucial for how records are processed and transmitted. By itself, the Record class only knows how to execute (send/store for example) a raw payload; once you wrap it in decorators such as compression or encryption it's possbile to dynamically alter, combine or chain additional behaviors at runtime without touching the core class. 
+
+Encryption and compression decorators play a vital role in our system by modularly enhancing both security and performance without modifying the core Record class. The compression decorator reduces payload size to save bandwidth and improve responsiveness, especially on constrained networks, while the encryption decorator ensures that sensitive data remains confidential throughout transmission and storage.
+
+##### Simple and advance record processing and their differences
+
+Simple record processing offers a lightweight workflow of processation (performing just the basic validation and direct handling of a record), used in simple and direct tasks. In the other hand advanced record processing orchestrates a more complex analyses related to complicated tasks that require some level of coordinations between differents systems to provide and adequate response or solution to the petition made by the user. This makes this process suitable for scenarios that demand deeper reasoning, custom business rules, or intensive data manipulation.
+
 ### External Services
 ![External Services](https://github.com/user-attachments/assets/3a04f940-356a-4a3c-abd7-304a380bbc00)
 
