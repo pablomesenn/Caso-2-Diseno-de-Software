@@ -275,18 +275,71 @@ Patterns:
 
 1. Component-Based Architecture (Must):
   - Since Tailwind CSS is utility-first. We can organize UI into reusable functional components.
-  - Maintain separation between presentational and container components.
-2. MVP (Android), MVVM (React and Flutter) (Must):
+    - Suggested classes: `UIButton`, `VoicePromptCard`, `ResponsePanel`
+  - Maintain separation between presentational components (`VoiceVisualizer`, `ResponseDisplay`) and container components (`AssistantContainer`, `ConversationManager`).
+2. Design Patterns:
+  - Singleton Pattern:
+    - `TaskManager` acts as a central coordinator that handles subscription management and process delegation
+    - `ApiService` singleton provides a unified interface for all external API communications
+    - `AudioManager` singleton controls audio processing resources and prevents multiple instances
+  - Observer Pattern:
+    - `Subscriber` interface implemented by components needing updates ( `User`, `Recorder`)
+    - `TaskManager` maintains subscribers list and notifies via `notifySubscribers()`
+    - `Event-driven` architecture for real-time UI updates when voice input changes
+  - Decorator Pattern:
+    `RecordInterface` with concrete implementations like `EncryptingDecorator` and `CompressionDecorator`
+    Allows dynamic addition of features (encryption, compression) to recording functionality
+  - Strategy Pattern:
+    `recordProcessingStrategy` interface with implementations (`SimpleRecordProcessing`, `AdvancedRecordProcessing`)
+    `AI_Assistant` uses these strategies interchangeably based on context
+  - Facade Pattern:
+    `TaskManager` acts as a facade for subsystems, simplifying complex interactions with recording, processing, and user interfaces
+3. MVP (Android), MVVM (React and Flutter) (Must):
+  MVP separates the app into Model, View, and Presenter. The View is passive, and the Presenter handles logic and updates the View. MVVM uses a ViewModel instead of a Presenter, allowing the View to observe and react to data changes—great for reactive frameworks like React and Flutter.
   - React Web → MVVM with Redux
   - Flutter Mobile → MVVM with Provider or Riverpod
+    - Models: `Record`, `User`, `ProcessingConfig`
+    - ViewModels: `AssistantViewModel`, `ConversationViewModel`, `AudioProcessingViewModel`
+    - Views: Corresponding React components or Flutter widgets
 
 Principles:
 1. SOLID (Must): Ensures modular, maintainable, and flexible code.
+  - Single Responsibility: Each class (`Recorder`, `AI_Assistant`, etc.) has one primary responsibility
+  - Open/Closed: Strategy pattern allows extending processing capabilities without modifying existing code
+  - Liskov Substitution: Derived classes like `SimpleRecordProcessing` can replace base interfaces
+  - Interface Segregation: Focused interfaces like `Subscriber` and `RecordInterface`
+  - Dependency Inversion: High-level modules depend on abstractions, not details
 2. DRY (Must): Prevents UI code duplication.
+  - Service Classes: `AuthenticationService`, `StorageService`, `LoggingService` act as shared services for components
+  - Utility Libraries: `AudioUtils`, `UIHelpers`, `FormatUtils` contain reusable functions
+  - HOCs/Mixins: `withAudioProcessing`, `withAuthentication` to share behavior across components
+  - Context Providers: `ThemeContext`, `UserContext`, `SettingsContext` for shared state
 3. Separation of Concerns (Must): Keeps logic separate from presentation and state management.
-4. Responsive Design (Must): 
-  - Uses Flexbox and CSS Grid in React and MediaQuery in Flutter to ensure responsiveness.
-  - Material Design for Android (since Flutter natively supports Material) and Web. Apple HIG for iOS.
+  - Audio Context: `AudioRecorder`, `AudioProcessor`, `SpeechToTextConverter`
+  - User Context: `UserManager`, `ProfileController`, `PreferencesStore`
+  - API Context: `ApiClient`, `EndpointManager`, `ResponseHandler`
+  - UI Context: `ThemeManager`, `ResponsiveLayout`, `AnimationController`
+  - Security Context: `EncryptionService`, `AuthGuard`, `PermissionsChecker`
+  - Payment Context: `PaymentProcessor`, `SubscriptionManager`, `BillingService`
+  - Schedule Context: `TaskScheduler`, `ReminderService`, `CalendarIntegration`
+4. Tailwind CSS Implementation Principles:
+  - Utility-First: Compose designs directly in markup using predefined utility classes
+  - Component Extraction: Extract repeated utility patterns into component classes using `@apply`
+  - Responsive Design: Use responsive variants (`sm:`, `md:`, `lg:`) consistently
+  - State Variants: Apply conditional styling with state variants (`hover:`, `focus:`, `active:`)
+  - Theme Configuration: Extend Tailwind's theme with custom values specific to voice assistant UI
+  - JIT Mode: Utilize Just-In-Time mode for development to generate styles on-demand
+  - Purge Unused CSS: Configure purging for production builds to minimize CSS size
+  - Responsive Design (Must): 
+    - Uses Flexbox and CSS Grid in React and MediaQuery in Flutter to ensure responsiveness.
+    - Material Design for Android (since Flutter natively supports Material) and Web. Apple HIG for iOS.
+5. Service-Oriented Architecture Elements:
+  - `ClientProxy` acts as service gateway for component communication with backend
+  - `DataTransformer` provides data transformation services across the application
+  - `StateManager` offers centralized state management services to components
+  - `EventBus` serves as a message broker between decoupled components
+  - `CacheController` provides caching services to improve performance
+  - The `TaskManager` class functions as a service provider for multiple components while maintaining a single point of coordination
    
 Toolkits and standards:
 1. UI Components
