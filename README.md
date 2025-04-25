@@ -714,7 +714,8 @@ We implemented unit tests using Jest to verify handler logic. For handlers inter
 
 #### 1. REST, GraphQL, gRPC, Monolithic, or Monolithic-MVC?
 
-This project will approach a Monolithic-MVC architecture with a hybrid REST/GraphQL API. The reason for this approach is first because Zathura plans to implement a hybrid approach using both REST and GraphQL. REST handles traditional backend operations, while GraphQL optimizes queries for efficient data retrieval.
+This project will approach a Monolithic architecture with a hybrid REST/GraphQL API. REST handles traditional backend operations, while GraphQL optimizes queries for efficient data retrieval. The core of the system uses multiple design patterns including Decorator, Observer, Singleton, and Strategy patterns to create a flexible and maintainable system. This pattern-oriented architecture will be deployed as a monolithic application rather than microservices.
+
 In this hybrid model, both would coexist and hadle different types of operations:
 
 1. REST for Traditional Operations
@@ -729,12 +730,12 @@ In this hybrid model, both would coexist and hadle different types of operations
 - Optimized mobile queries to reduce bandwidth usage
 - Real time data needs via subcriptions
 
-The devolpment team is just of 4 members and has decided to implement a single-service architectue, which makes much sense to make a monolithic approach than microservices.
+This provides excellent separation of concerns through design patterns rather than traditional layers, maintains flexibility for future growth, and keeps the system manageable for the current team size and development stage.
 
 ##### Internal Layers Handling Requests/Responses
 Similar to the PoC, the defined layers are:
 
-1. Handler Layer (Controller in terms of MVC)
+1. Handler Layer
 - Entry point for all the HTTP resquests (REST) and GraphQL operations.
 - Delegates business logic to the Service Layer
 - Applies middleware for cross-cutting concerns
@@ -760,32 +761,39 @@ Similar to the PoC, the defined layers are:
 - Generated automated tasks
 Interfaces with the service layer
 
-##### How do object design patterns interact with requests or any other triger
+##### How do object design patterns interact with requests or any other trigger
 
 1. Factory Pattern
     Used in the Repository layer to dynamically create appropriate repository instances and triggered during request handling to select the correct data source
-
+    Classes: `RepositoryFactory` Creates and returns repository implementations such as `PostgresUserRepository`. This allows the system to switch between data sources or configurations dynamically.
 2. Repository Pattern
-    Abstracts data source operations behind interfaces. Allows handlers/services to work with data without knowing storage details
+    Abstracts data source operations behind interfaces. Allows handlers/services to work with data without knowing storage details. this separation is key for integrating GraphQL resolvers and REST endpoints without duplicating logic.
+    Classes: `UserRepository` (interface) and corresponding implementations gets and creates.
 
 3. Template Method Pattern
-    Evident in the BaseHandler abstract class, defines the skeleton of request handling while allowing subclasses to override specific steps
-
+    Provides a consistent structure for request processing (e.g., authentication → validation → execution → response formatting).Evident in the `BaseHandler` abstract class, defines the skeleton of request handling while allowing subclasses to override specific steps
+      Classes: `BaseHandler` (abstract), extend BaseHandler and implement specific behavior
+                `RestHandler` and `GraphQLHandler` extend BaseHandler, and implement specific request types like HTTP methods vs GraphQL queries/mutations.
 4. Strategy Pattern
     Applied to middleware components, allowing different processing strategies to be applied to requests
     and supports both optional and mandatory middleware
-
+    Classes: `MiddlewareStrategy` (interface) it is a contract for all middleware logic.
+              `AuthenticationMiddleware` and `LoggingMiddleware`, or any individual strategies that can be applied independently or in combination.
+              `RequestProcessor`: Executes a chain of middleware strategies before reaching the handler. Useful for both REST routes and GraphQL resolvers.
 5. Dependency Injection
-    Services receive repositories through construction. Handlers receive services through construction, and facilitates testing and loose coupling
-
+    Services receive repositories through construction. Handlers receive services through construction, and facilitates testing and loose coupling.
+    Classes: `UserService` receives a UserRepository (like `PostgresUserRepository`) through its constructor.
 6. Event-Driven Pattern
     After handling synchronous aspects of requests, events are published via Google Cloud Pub/Sub
-    These events trigger asynchronous processing for time-consuming operations
-
+    These events trigger asynchronous processing for time-consuming operations.
+    Classes:  `EventPublisher` publishes events like `UserSignedUpEvent` after business logic executes.
+              `VoiceCommandService` triggers events when AI commands are processed, decoupling immediate request handling from secondary actions.
 7. Pub/Sub Pattern
-    When certain actions are triggered (like task recording), multiple subscribers can react
+    When certain actions are triggered (like task recording), multiple subscribers can react.
     Allows for extensibility without modifying existing code
-
+    Classes:  `PubSubClient`: Encapsulates publishing logic to Google Cloud Pub/Sub.
+              `NotificationSubscriber`: Reacts to domain events like UserSignedUpEvent, sending notifications via Google Cloud Messaging.
+              `AnalyticsSubscriber`: Responds to events such as `TaskCompletedEvent`, sending data to Google Cloud Storage or BigQuery for further analysis.
 
 This architecture provides a clean separation of concerns, enables efficient request handling, and maintains flexibility for future growth while keeping the system manageable for the current team size and development stage.
 
@@ -793,7 +801,7 @@ This architecture provides a clean separation of concerns, enables efficient req
 
 This project is designed for a cloud based infraestructure with serverless component in a hybrid approach. Google Cloud Platform has been chosen as cloud provider for Firebase and scalable cloud services for core fuctionability.
 
-##### Hardware Semands and Cloud Machine Types
+##### Hardware Demands and Cloud Machine Types
 1. Compute resourses
   - AI and Machine Learning processing: TensoFlow workloads for voice command processing require GPU-accerated instances, meaning the employment of a graphics processing unit (GPU) along with a computer processing unit (CPU).
   - Backend services are needed, standard compute instances for Node.js and Python services.
@@ -1041,7 +1049,7 @@ An API Gateway will not be used in this project because the application is desig
 
 
 
-|                            | N-layer Architecture | Flutter Mobile | React Web | Firebase Auth | Monolithic-MVC with Hybrid REST/GraphQL | PostgreSQL | TensorFlow | GCP Cloud Infrastructure | SOLID & Design Patterns |
+|                            | N-layer Architecture | Flutter Mobile | React Web | Firebase Auth | Monolithic with Hybrid REST/GraphQL | PostgreSQL | TensorFlow | GCP Cloud Infrastructure | SOLID & Design Patterns |
 |----------------------------|----------------------|----------------|-----------|---------------|----------------------------------------|------------|------------|--------------------------|-------------------------|
 | **Non-Functional Requirements** |                  |                |           |               |                                        |            |            |                          |                         |
 | Scalability                |                     | ❌             | ❌        | ❌            | ❌                                     | ❌         | ❌         | ❌                       | ❌                      |
