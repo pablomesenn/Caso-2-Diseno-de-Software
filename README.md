@@ -1,6 +1,6 @@
 # Zathura - personal AI and voice recognition assistant
 
-Members: Pablo Mesén, Alonso Duran, Ana Hernández Muñoz, Jesus Valverde
+Members: Pablo Mesén, Alonso Durán Muñoz, Ana Hernández Muñoz, Jesus Valverde
 
 
 
@@ -302,7 +302,7 @@ Patterns:
   - Observer Pattern:
     - `Subscriber` interface implemented by components needing updates ( `User`, `Recorder`)
     - `TaskManager` maintains subscribers list and notifies via `notifySubscribers()`
-    - `Event-driven` architecture for real-time UI updates when voice input changes
+    - Event-driven architecture for real-time UI updates when voice input changes
   - Decorator Pattern:
     `RecordInterface` with concrete implementations like `EncryptingDecorator` and `CompressionDecorator`
     Allows dynamic addition of features (encryption, compression) to recording functionality
@@ -359,7 +359,7 @@ Principles:
   - The `TaskManager` class functions as a service provider for multiple components while maintaining a single point of coordination
    
 Toolkits and standards:
-1. UI Components
+1. UI Components  
    - Web (React): Tailwind CSS
    - Mobile (Flutter): Material Design (Android), Cupertino (iOS)
 
@@ -917,89 +917,100 @@ This architecture provides a clean separation of concerns, enables efficient req
 This project is designed for a cloud based infraestructure with serverless component in a hybrid approach. Google Cloud Platform has been chosen as cloud provider for Firebase and scalable cloud services for core fuctionability.
 
 ##### Hardware Demands and Cloud Machine Types
-1. Compute resourses
-  - AI and Machine Learning processing: TensorFlow workloads for voice command processing require GPU-accerated instances, meaning the employment of a graphics processing unit (GPU) along with a computer processing unit (CPU).
-  - Backend services are needed, standard compute instances for Node.js and Python services.
+1. Computer resourses
+  - AI and Machine Learning processing: TensorFlow workloads for voice command processing require GPU-accelerated instances (NVIDIA T4 GPUs with 4 cores, 16GB VRAM)
+  - Backend services: Standard compute instances for Node.js (4 vCPUs, 8GB RAM) and Python services (8 vCPUs, 16GB RAM)
   - Virtual machines from Google Cloud Platform like `n1-standard` for the Node.js services, `n1-highmem` for Pyhton AI processing, and `t2d-standard` for cost-efficient background processing.
 
 2. Storage Requirements
-  - Database: PostgreSQL requires persistent SSD storage
-  - Voice Recordings: Cloud Storage buckets for user-generated content
+  - Database: PostgreSQL requires 100GB persistent SSD storage with 3000 read IOPS and 1000 write IOPS
+  - Voice Recordings: Cloud Storage buckets for user-generated content (estimated 10GB daily)
   - GCP Storage Types:
 
     Cloud SQL with SSD persistent disks for PostgreSQL
 
-    Standard storage class in Cloud Storage for voice recordings
+    Standard storage class in Cloud Storage for voice recordings (0-30 days)
 
-    Nearline storage for older, less frequently accessed data
+    Nearline storage for older, less frequently accessed data (>30 days)
 
 3. Network Requirements
 
-  - Content delivery network for global user base "global availability
-  - API Gateway: For securing and managing API endpoints
+  - Content delivery network for global user base with 99.95% availability
+  - Direct API access
   - GCP Network Services related to this:
 
-    Cloud CDN for content delivery
-    Cloud Load Balancing for distributing traffic
+    Cloud CDN for content delivery with 200Mbps peak outbound capacity
+    Cloud Load Balancing for distributing traffic across regions
 
 4. Serverless Components
 
   - Firebase
-    Authentication service
-    Real-time database for specific use cases
-    Hosting for web applications
+    Pricing Plan: Blaze (pay-as-you-go)
+    Authentication Methods: Email/password, Google, Apple
+    Realtime Database Instance: 1 GB storage capacity
+    Region: us-central1 (primary), asia-northeast1 (secondary)
+    Security Rules: Custom rules with IP-based access restrictions
+    Analytics Retention: 60 days
 
-  - Cloud Functions
-    Event-driven processing for voice command analysis
-    Webhook handlers for third-party integrations
-
-  - Cloud Run
-    Containerized microservices for core business logic
-    Scales automatically based on demand
+  - Cloud Functions (Google Cloud Functions)
+    Memory: 256 MB for webhook handlers, 1024 MB for voice processing
+    Maximum Execution Time: 60 seconds (webhooks), 300 seconds (voice processing)
+    Region: us-central1 (primary), europe-west1 (secondary)
+    Architecture: x86_64
+    Runtime: Node.js 20 for webhooks, Python 3.11 for AI processing
+    Concurrency: 80 concurrent executions per function
+    CPU: 1 vCPU (webhooks), 2 vCPU (voice processing)
+    Scaling: Auto-scaling with maximum 100 instances per function
+    Environment: Second generation execution environment
+    Network Egress: 5 GB monthly (estimated)
 
 ##### Impacts frameworks, libraries, and programming languages.
 
 1. Programming Languages
 
-  **Node.js**: It's an efficient language able to handle multiple connections, event-driven architecture which aligns with serverless model, it has a big variety
- of libraries too. It has very good support with GCP cloud functions and cloud run (deployment). 
-  **Python**: It has impressive compatibility for ML and AI through TensorFlow, extensive data processing libraries which is an important aspect for Zathura.
+  **Node.js 20.x**: It's a efficient languaje able to handle multiple connections, event-driven architecture which aligns with serverless model, it has a rich ecosystem of libraries too. It has very good support with GCP cloud functions and cloud run (deployment). 
+  **Python 3.11.x**: It has impressive campabilities for ML and AI through TensorFlow, ectensive data processing libraries which is a important key for Zathura.
   On cloud it has native support in GCP's AI platform, with integration with BigQuery for analytics
 
 2. Frontend Frameworks
 
-  **Flutter**: Its crossplataform compability reduces development effort and time, and has a efficient background processing.
+  **Flutter 3.19.x**: Its crossplataform compability reduces development effort and time, and has a efficient background processing.
   Works well with Firebase services (Authentication and cloud messaging), meaning there is compability between them.
 
-  **React**: This framework has high performance, component reusability, and a large ecosystem.
+  **React 18.2.x**: This framework has high performance, component reusability, and a large ecosystem.
   It is optimized for Firebase hosting, and integrates well with most GCP services.
 
 3. Database Technologies
 
-  **PostgresSQL**: It is a robust relational database, ACID compliance, powerful capabilities.
-  It is fully managed in Cloud SQL, reducing operational overhead.
+  **PostgresSQL 16.x**: It is a robust relational database, ACID complience, poweful capabilities.
+  It is fully managed in Cloud SQL, reucing operational overhead.
 
   **Firebase**: It has real time updates, offline support, serverless operations.
   Also native with GCP.
 
 4. DevOps & CI/CD
   
-  **Github Actions**: Makes automated workflows, community-built actions. 
+  **Github Actions v2**: Makes automated workfows, community-built actions. 
   It also has a strong integration with GCP deployment targets.
 
 5. AI/ML Frameworks
   
-  **TensoFlow**: For now the industry leading ML framework, with extensice model options. 
+  **TensoFlow 2.16.x**: For now the industry leading ML framework, with extensice model options. 
   Ptimized performance on GCP AI platform, and TPU (hardware accelerator specialized in AI) support.
 
 6. Libraries:
-  **React Testing Library**: Provides testing for react components
-  **Flutter Test**: Provides testing for flutter apps.
-  **pytest**: Useful for backend unit and integration testing.
-  **Appium**: For automation testing for third party app interactions. 
+  **React Testing Library 14.2.x**: Provides testing for react components
+  **Flutter Test 3.19.x**: Provides testing for flutter apps.
+  **pytest 7.4.x**: Useful for backend unit and integration testing.
+  **Appium 2.3.x**: For automation testing for third party app interactions. 
+  NumPy 1.26.x: Numerical computing library for Python
+  pandas 2.1.x: Data analysis library for Python
+  scikit-learn 1.3.x: Machine learning library for Python
+  Firebase SDK for JS 10.7.x: For Firebase integration with web applications
+  loud-functions 2.4.x: For implementing Google Cloud Functions
 
 #### 3. Service vs Microservice
-Zathura is still in early development, taking this into account chosing to implement the single-service architecture is a strategic and realistic decision. This decision is justified by the following reasons:
+Zathura is still an early in development application, taking this into account chosing to implement the single-service architecture is a strategic and realistic decision. This decision is justified by the following reasons:
 
 ##### 1. Operational Simplicity
 
