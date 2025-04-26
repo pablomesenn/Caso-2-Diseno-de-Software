@@ -627,6 +627,28 @@ The original template used console.log() for logging, which is inadequate for pr
 ##### Solution Chosen
 
 We implemented a Logger interface and a CloudWatchLogger class, utilizing the AWS SDK to send logs to CloudWatch Logs. This adheres to the Strategy pattern, allowing for different logging implementations in the future.
+To extend this further, we've built a comprehensive multi-logger architecture that supports multiple logging destinations simultaneously:
+
+1. We designed an abstract BaseLogger class that defines the common interface for all logger implementations (info(), error(), warn(), etc.)
+
+2. We implemented concrete logger adapters for various logging services:
+
+  * CloudWatchLogger - for AWS CloudWatch integration
+  * ConsoleLogger - for local development and debugging
+  * FileLogger - for local file storage of logs
+ElasticsearchLogger - for searchable log analytics
+SentryLogger - for error monitoring and tracking
+
+We created a LoggerFactory that manages logger instances and enables using them individually or collectively:
+javascriptconst loggerFactory = new LoggerFactory();
+loggerFactory.addLogger('cloudwatch', new CloudWatchLogger(cloudwatchConfig));
+loggerFactory.addLogger('console', new ConsoleLogger());
+
+A CompositeLogger allows broadcasting log events to multiple destinations simultaneously:
+javascriptconst logger = loggerFactory.getCompositeLogger();
+logger.error('This error is recorded in all configured logging systems');
+
+Environment-based configuration determines which loggers are active in different deployment contexts.
 
 ##### Advantages over the original template
 
@@ -1087,61 +1109,189 @@ An API Gateway will not be used in this project because the application is desig
 
 ### Data Layer Design for Zathura
 
-**I. Structural - Infrastructure, Architecture, DevOps, DataOps**
+#### I. Data Topology and Storage
 
-* **a) Data Topology:**
-    * Begin with a managed PostgreSQL service configured for high availability with a primary instance and read replicas.
-* **b) Big Data Repository:**
-    * Implement a data lake using Google Cloud Storage to store raw data from user interactions and AI processing. Integrate this with BigQuery for analytical purposes.
-* **c) Relational or NoSQL:**
-    * Primarily use PostgreSQL for the core application data. Supplement this with Cloud Firestore for specific needs:
-        * PostgreSQL: For structured data requiring ACID properties and complex queries.
-        * Cloud Firestore: For real-time updates, user presence.
-* **d) Tenancy, Permissions, Privacy, and Security:**
-    * Leverage Firebase Authentication for user authentication and authorization.
-    * Use PostgreSQL's role-based access control to manage data access within the database.
-    * Enforce encryption at rest using Cloud SQL's encryption features and in transit.
-    * Implement regular security audits and vulnerability scanning.
-* **e) Recovery and Fault Tolerance:**
-    * Utilize the automated backup and recovery features of Google Cloud SQL.
-    * Implement cross-region replication for disaster recovery.
-    * Establish clear Recovery Point Objectives (RPO) and Recovery Time Objectives (RTO).
+##### a) Data Topology
 
-**II. Object-Oriented Design - Programming**
+Zathura will primarily utilize a managed PostgreSQL service on Google Cloud SQL for its core transactional data. This choice is driven by PostgreSQL's strong support for ACID properties, essential for maintaining data integrity in task recording and user management.
 
-* **a) Transactional via Statements or Stored Procedures:**
-    * Use a combination of both:
-        * Statements: For simple, dynamic queries and ORM interactions.
-        * Stored Procedures: For complex, performance-critical operations and reusable database logic.
-* **b) Use of ORM:**
-    * Employ an ORM.
-    * This will significantly improve development speed and maintainability.
-    * Choose an ORM that supports asynchronous operations and connection pooling.
-* **c) Layers for Control:**
-    * Strictly adhere to a layered architecture:
-        * DAL: Abstract database interactions.
-        * BLL: Enforce business rules and logic.
-        * Presentation Layer: Handle UI and user input.
-        * Implement connection pooling, transaction management, and robust error handling within the DAL.
-* **d) Use of Cache:**
-    * Integrate a caching layer using Cloud Memorystore (Redis).
-    * Use the cache-aside pattern for most data access.
-    * Consider caching frequently accessed data, API responses, and results of expensive computations.
-* **e) Drivers:**
-    * Use the recommended drivers for PostgreSQL:
-        * pg (Node.js)
-        * psycopg2 (Python)
-    * Ensure the drivers are up-to-date and configured for optimal performance.
-* **f) Data Design:**
-    * Prioritize database normalization to maintain data integrity.
-    * Use appropriate data types and indexing to optimize query performance.
-    * Design the database schema to be scalable and flexible to accommodate future changes.
+To enhance availability and read scalability, a high-availability configuration will be implemented with a primary instance and read replicas. This ensures that the application remains responsive and resilient to failures.
 
+Access to the PostgreSQL database will be strictly controlled through Google Cloud VPC firewall rules. Only authorized services within the Zathura backend will be permitted to connect, minimizing the attack surface.
+
+For specific use cases requiring real-time data updates and synchronization, such as user presence or real-time collaboration features, Cloud Firestore will be employed. This NoSQL database offers flexible data modeling and efficient real-time capabilities.
+
+**Benefits:**
+
+* PostgreSQL provides robust data integrity and consistency for core application data.
+* Cloud SQL simplifies database management and offers built-in scalability and high availability.
+* Firestore enables real-time features, enhancing user experience.
+* VPC firewall rules enforce strong security by restricting database access.
+
+##### b) Big Data Repository
+
+A data lake, built on Google Cloud Storage, will serve as the central repository for raw data generated by user interactions and AI processing. This includes voice recordings, task logs, and AI model outputs. Cloud Storage offers scalable and cost-effective storage for large volumes of unstructured and semi-structured data.
+
+For analytical purposes, this data lake will be integrated with Google BigQuery. BigQuery's serverless architecture and SQL interface will enable efficient querying and analysis of the data, supporting reporting, trend analysis, and potential future machine learning initiatives.
+
+An event-driven architecture, leveraging Google Cloud Pub/Sub, will facilitate the transfer of data from the application's operational databases (PostgreSQL, Firestore) to the data lake and BigQuery. This ensures asynchronous and reliable data ingestion.
+
+While immediate plans for extensive machine learning on this data are limited, the architecture is designed to accommodate future expansion in this area.
+
+A batch processing job will be scheduled daily at 3:00 AM (UTC) to transfer data from PostgreSQL to BigQuery, focusing on "delta" changes (new or modified records) to optimize performance.
+
+`delta = TotalRecordsToday - TotalRecordsYesterday`
+
+**Benefits:**
+
+* Cloud Storage provides scalable and cost-effective storage for raw data.
+* BigQuery enables powerful analytics and reporting capabilities.
+* Event-driven architecture ensures reliable data transfer and decouples operational systems from analytics.
+* The design supports future machine learning and data science initiatives.
+
+##### c) Database Engine
+
+The primary database engine for Zathura will be PostgreSQL, hosted on Google Cloud SQL. This decision is based on:
+
+* The need for strong transactional support (ACID properties) to ensure data consistency in task recording and user management.
+* PostgreSQL's ability to handle complex queries and relationships, which are essential for the application's functionality.
+
+Cloud Firestore will supplement PostgreSQL for specific real-time data needs, as outlined in section a).
+
+**Benefits:**
+
+* PostgreSQL guarantees data integrity and consistency through ACID transactions.
+* Cloud SQL simplifies database administration and provides scalability.
+* The combination of PostgreSQL and Firestore optimizes data storage and retrieval for different application requirements.
+
+##### d) Tenancy and Data Security:
+
+Zathura will employ a multi-tenant architecture to support multiple organizations using the platform. To ensure data isolation, a database schema-based tenancy strategy will be implemented. Each tenant will have its own dedicated schema within the PostgreSQL database, providing a strong separation of data.
+
+**Security Measures:**
+
+* **Authentication and Authorization:** Firebase Authentication will be used for user authentication, providing secure login and user management. PostgreSQL's role-based access control (RBAC) will further manage data access within the database, ensuring that users only have access to the data they are authorized to view or modify.
+* **Encryption:** Sensitive data, such as user credentials and configuration settings, will be encrypted both at rest (using Cloud SQL's encryption features) and in transit (using TLS/SSL). This protects data from unauthorized access in case of storage compromise or network interception.
+* **Tenant Manager Layer:** A dedicated "Tenant Manager Layer" will be implemented within the application's backend. This layer will act as a central point of access to the database, enforcing tenancy rules and preventing cross-tenant data access. The Strategy Pattern and a Builder Pattern will be used to ensure that all data access operations go through this layer.
+* **Database Proxy:** To further enhance security, a single database proxy will be used. Only this proxy will be authorized to connect to the Cloud SQL instance (using VPC firewall rules), limiting the number of entry points and simplifying security management.
+* **Auditing and Monitoring:** Comprehensive logging and auditing will be implemented to track data access and modifications. Regular security audits and vulnerability scanning will be conducted to identify and address potential security risks.
+
+**Benefits:**
+
+* Schema-based tenancy provides strong data isolation and prevents cross-tenant data access.
+* Firebase Authentication and PostgreSQL's RBAC offer robust authentication and authorization.
+* Encryption protects sensitive data at rest and in transit.
+* The Tenant Manager Layer and database proxy enforce tenancy rules and enhance security.
+* Auditing and monitoring enable proactive security management.
+
+##### e) Recovery and Fault Tolerance:
+
+Google Cloud SQL's automated backup and recovery features will be used to ensure data recoverability in case of failures. Point-in-time recovery will allow restoring the database to a specific point in time.
+
+Cross-region replication will be implemented for the primary PostgreSQL instance to provide disaster recovery capabilities. This will ensure that the application can continue to operate even in the event of a regional outage.
+
+Clearly defined Recovery Point Objectives (RPO) and Recovery Time Objectives (RTO) will be established for the data layer to guide recovery efforts and minimize data loss and downtime.
+
+**Benefits:**
+
+* Automated backups and point-in-time recovery simplify data restoration.
+* Cross-region replication ensures high availability and disaster recovery.
+* Defined RPO and RTO minimize data loss and downtime.
+
+#### II. Object-Oriented Design - Programming
+
+##### a) Transactionality:
+
+A combination of SQL statements and stored procedures will be used to interact with the PostgreSQL database.
+
+SQL statements will be used for simple CRUD (Create, Read, Update, Delete) operations and dynamic queries, often managed by the ORM.
+
+Stored procedures will be employed for complex, performance-critical operations, batch processing, and reusable database logic. This will improve efficiency and maintainability for certain tasks.
+
+**Benefits:**
+
+* SQL statements provide flexibility for general data access.
+* Stored procedures optimize performance for specific database operations.
+* This hybrid approach balances flexibility and performance.
+
+##### b) Use of ORM:
+
+An Object-Relational Mapper (ORM) will be used to simplify database interactions within the application's code.
+
+The specific ORM will be selected based on its compatibility with Node.js (the primary backend language), its support for asynchronous operations and connection pooling, and its feature set. TypeORM or Sequelize are strong candidates.
+
+**Benefits:**
+
+* The ORM abstracts away database-specific code, improving developer productivity.
+* It enhances code maintainability and reduces the risk of SQL injection vulnerabilities.
+* Asynchronous operations and connection pooling improve performance and scalability.
+
+##### c) Connection Pooling:
+
+A connection pool will be implemented to manage database connections efficiently. This will reduce the overhead of establishing new connections for each request, improving performance and scalability.
+
+A dynamic connection pool will be configured with an appropriate initial size, maximum size, and connection timeout settings. The specific values will be determined through performance testing and monitoring.
+
+The connection pool will be managed by the chosen ORM or a dedicated library like pg-pool for Node.js.
+
+**Benefits:**
+
+* Connection pooling significantly improves database performance and reduces resource consumption.
+* Dynamic sizing optimizes resource allocation based on application load.
+
+##### d) Use of Cache:
+
+A caching layer will be integrated into the application to reduce database load and improve response times. Google Cloud Memorystore (Redis) is a suitable option for this purpose.
+
+The cache-aside pattern will be the primary caching strategy. The application will first attempt to retrieve data from the cache. If the data is not found (cache miss), it will be retrieved from the database, stored in the cache, and then returned to the user.
+
+Data to be cached will include:
+
+* Frequently accessed configuration data.
+* Results of expensive database queries that do not change frequently.
+* User session data.
+
+Cache keys will be designed to ensure uniqueness and efficient retrieval (e.g., user:{user_id}, config:{config_key}).
+
+Cache invalidation strategies will include:
+
+* Time-to-live (TTL) based invalidation for data with a limited lifespan.
+* Explicit invalidation when data is modified in the database.
+
+**Benefits:**
+
+* Caching dramatically improves application performance and responsiveness.
+* It reduces database load and improves scalability.
+
+##### e) Drivers:
+
+The recommended PostgreSQL drivers for Node.js (pg or pg-promise) and Python (psycopg2) will be used. These drivers provide efficient and reliable communication with the database.
+
+Drivers will be kept up-to-date to ensure compatibility, performance, and security.
+
+**Benefits:**
+
+* Recommended drivers offer optimal performance and compatibility.
+* Keeping drivers up-to-date ensures security and access to the latest features.
+
+##### f) Data Design:
+
+The database schema will be designed with a focus on normalization to minimize data redundancy and maintain data integrity.
+
+Appropriate data types will be used for each column to optimize storage and performance.
+
+Indexing strategies will be carefully considered to optimize query performance, particularly for frequently accessed data and join operations.
+
+**Benefits:**
+
+*Normalized schema ensures data integrity and reduces redundancy.
+*Appropriate data types optimize storage and performance.
+*Indexing improves query performance.
+*Examples provide clear guidance for developers.
+*The combination of relational (PostgreSQL) and NoSQL (Firestore) databases allows for optimal data storage and retrieval based on specific needs.
 ## Architecture Design
 
 ## Architecture Compliance Matrix
-
-
 
 |                            | N-layer Architecture | Flutter Mobile | React Web | Firebase Auth | Monolithic with Hybrid REST/GraphQL | PostgreSQL | TensorFlow | GCP Cloud Infrastructure | SOLID & Design Patterns |
 |----------------------------|----------------------|----------------|-----------|---------------|----------------------------------------|------------|------------|--------------------------|-------------------------|
