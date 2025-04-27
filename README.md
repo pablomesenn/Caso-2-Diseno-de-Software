@@ -327,17 +327,16 @@ Principles:
   - Interface Segregation: Focused interfaces like `Subscriber` and `RecordInterface`
   - Dependency Inversion: High-level modules depend on abstractions, not details
 2. DRY (Must): Prevents UI code duplication.
-  - Service Classes: `AuthenticationService`, `StorageService`, `LoggingService` act as shared services for components
+  - Service Classes: `AuthenticationService` or `LoggingService` act as shared services for components
   - Utility Libraries: `AudioUtils`, `UIHelpers`, `FormatUtils` contain reusable functions
   - HOCs/Mixins: `withAudioProcessing`, `withAuthentication` to share behavior across components
   - Context Providers: `ThemeContext`, `UserContext`, `SettingsContext` for shared state
 3. Separation of Concerns (Must): Keeps logic separate from presentation and state management.
   - Audio Context: `AudioRecorder`, `AudioProcessor`, `SpeechToTextConverter`
   - User Context: `UserManager`, `ProfileController`, `PreferencesStore`
-  - API Context: `ApiClient`, `EndpointManager`, `ResponseHandler`
+  - API Context: `ApiService`, `EndpointManager`, `ResponseHandler`
   - UI Context: `ThemeManager`, `ResponsiveLayout`, `AnimationController`
   - Security Context: `EncryptionService`, `AuthGuard`, `PermissionsChecker`
-  - Payment Context: `PaymentProcessor`, `SubscriptionManager`, `BillingService`
   - Schedule Context: `TaskScheduler`, `ReminderService`, `CalendarIntegration`
 4. Tailwind CSS Implementation Principles:
   - Utility-First: Compose designs directly in markup using predefined utility classes
@@ -351,7 +350,6 @@ Principles:
     - Uses Flexbox and CSS Grid in React and MediaQuery in Flutter to ensure responsiveness.
     - Material Design for Android (since Flutter natively supports Material) and Web. Apple HIG for iOS.
 5. Service-Oriented Architecture Elements:
-  - `ClientProxy` acts as service gateway for component communication with backend
   - `DataTransformer` provides data transformation services across the application
   - `StateManager` offers centralized state management services to components
   - `EventBus` serves as a message broker between decoupled components
@@ -968,7 +966,7 @@ This project is designed for a cloud based infraestructure with serverless compo
 
 1. Programming Languages
 
-  **Node.js 20.x**: It's a efficient languaje able to handle multiple connections, event-driven architecture which aligns with serverless model, it has a rich ecosystem of libraries too. It has very good support with GCP cloud functions and cloud run (deployment). 
+  **Node.js 20.x**: It's a efficient language able to handle multiple connections, event-driven architecture which aligns with serverless model, it has a rich ecosystem of libraries too. It has very good support with GCP cloud functions and cloud run (deployment). 
   **Python 3.11.x**: It has impressive campabilities for ML and AI through TensorFlow, ectensive data processing libraries which is a important key for Zathura.
   On cloud it has native support in GCP's AI platform, with integration with BigQuery for analytics
 
@@ -1322,100 +1320,186 @@ Indexing strategies will be carefully considered to optimize query performance, 
 ### Non-Functional Requirements
 #### Scalability
 
-  **N-layer Architecture**: While the separation of concerns enables some scalability, the monolithic nature may limit horizontal scaling beyond a certain point. Even with separation of concerns, everything is still tightly bundled. This causes issues when trying to scale horizontally (i.e., adding more machines to handle more load).
+  **N-layer Architecture**: 
+  - While the separation of concerns enables some scalability, the monolithic nature may limit horizontal scaling beyond a certain point. 
+  - Even with separation of concerns, everything is still tightly bundled. This causes issues when trying to scale horizontally like adding more machines to handle more load.
 
-  **Flutter Mobile**: Efficient background processing capabilities support handling increased user load without performance degradation.
-  **React Web**: React's virtual DOM and component architecture enable efficient rendering even with large amounts of data.
-  **Firebase Auth**: Firebase Authentication is designed to handle millions of users with automatic scaling.
-  **Monolithic-MVC with Hybrid REST/GraphQL**: GraphQL optimizes data retrieval, reducing bandwidth and enabling selective data fetching for better scaling.
-  **PostgreSQL**: Supports both vertical scaling and read replicas for handling increased load.
-  **TensorFlow**: Capable of distributed processing and hardware acceleration for scaling machine learning tasks.
-  **GCP Cloud Infrastructure**: Provides auto-scaling capabilities for handling the required growth from 900 to 500,000 users.
-  **SOLID & Design Patterns**: Promotes loose coupling and high cohesion, facilitating easier scaling and maintenance.
+  **Flutter Mobile**: 
+  - Efficient background processing capabilities support handling increased user load without performance degradation.
+  
+  **React Web**: 
+  - React's virtual DOM and component architecture enable efficient rendering even with large amounts of data.
+  
+  **Firebase Auth**: 
+  - Firebase Authentication is designed to handle millions of users with automatic scaling.
+  
+  **Monolithic-MVC with Hybrid REST/GraphQL**: 
+  - GraphQL optimizes data retrieval, reducing bandwidth and enabling selective data fetching for better scaling.
+  
+  **PostgreSQL**: 
+  - Supports both vertical scaling and read replicas for handling increased load.
+  
+  **TensorFlow**: 
+  - Capable of distributed processing and hardware acceleration for scaling machine learning tasks.
+  
+  **GCP Cloud Infrastructure**: 
+  - Provides auto-scaling capabilities for handling the required growth from 900 to 500,000 users.
+  
+  **SOLID & Design Patterns**: 
+  - Promotes loose coupling and high cohesion, facilitating easier scaling and maintenance.
 
 #### Security
 
-  **N-layer Architecture**: Provides some security through separation of concerns, but requires additional security measures at each layer.
-  **Flutter Mobile**: Offers some built-in security features but requires additional implementation for encryption and secure storage.
-  **React Web**: Similar to Flutter, needs additional security implementations for client-side security.
-  **Firebase Auth**: Fully supports 2FA, secure session management, and complies with security standards.
-  **Monolithic-MVC with Hybrid REST/GraphQL**: The MVC pattern allows for centralized security controls and GraphQL enables fine-grained access control.
-  **PostgreSQL**: Provides strong data encryption, role-based access control, and audit logging capabilities.
-  **TensorFlow**: Limited built-in security features; requires additional measures to secure AI/ML pipelines.
-  **GCP Cloud Infrastructure**: Offers comprehensive security features including encryption at rest and in transit.
-  **SOLID & Design Patterns**: Design patterns like Strategy for authentication enable flexible security implementation.
+  **N-layer Architecture**: 
+  - Provides some security through separation of concerns, but requires additional security measures at each layer.
+  
+  **Flutter Mobile**: 
+  - Offers some built-in security features but requires additional implementation for encryption and secure storage.
+  
+  **React Web**: 
+  - Similar to Flutter, needs additional security implementations for client-side security.
+  
+  **Firebase Auth**: 
+  - Fully supports 2FA, secure session management, and complies with security standards.
+  
+  **Monolithic-MVC with Hybrid REST/GraphQL**: 
+  - The MVC pattern allows for centralized security controls and GraphQL enables fine-grained access control.
+  
+  **PostgreSQL**: 
+  - Provides strong data encryption, role-based access control, and audit logging capabilities.
+  
+  **TensorFlow**: 
+  - Limited built-in security features; requires additional measures to secure AI/ML pipelines.
+  
+  **GCP Cloud Infrastructure**: 
+  - Offers comprehensive security features including encryption at rest and in transit.
+  
+  **SOLID & Design Patterns**: 
+  - Design patterns like Strategy for authentication enable flexible security implementation.
 
 #### Performance
 
-  **N-layer Architecture**: Clean separation enables optimizing each layer independently for performance.
-  **Flutter Mobile**: Native-like performance and efficient background processing capabilities.
+  **N-layer Architecture**: 
+  - Clean separation enables optimizing each layer independently for performance.
+  
+  **Flutter Mobile**: 
+  - Native-like performance and efficient background processing capabilities.
+  
   **React Web**: Virtual DOM minimizes DOM operations for responsive UI performance.
+  
   **Firebase Auth**: While generally fast, network latency can occasionally exceed the 3-second response time requirement.
+  
   **Monolithic-MVC with Hybrid REST/GraphQL**: GraphQL optimizes network requests by fetching only needed data.
+  
   **PostgreSQL**: Provides indexing and query optimization for fast data retrieval.
+  
   **TensorFlow**: GPU acceleration enables high-performance AI processing without affecting device performance.
+  
   **GCP Cloud Infrastructure**: High-performance compute resources and global CDN ensure fast response times.
+  
   **SOLID & Design Patterns**: Patterns like Repository pattern enable caching and optimized data access.
 
 #### Compatibility
 
+  
   **N-layer Architecture**: Platform-agnostic design enables consistent functionality across different environments.
+  
   **Flutter Mobile**: Single codebase supports both iOS and Android platforms.
+  
   **React Web**: Works across all modern browsers supporting the compatibility requirement.
+  
   **Firebase Auth**: Available on all required platforms (Web, iOS, Android, macOS, Windows).
+  
   **Monolithic-MVC with Hybrid REST/GraphQL**: Standard protocols ensure compatibility with various clients.
+  
   **PostgreSQL**: Available on all major platforms with consistent behavior.
+  
   **TensorFlow**: Some platform-specific optimizations may be required for consistent performance.
+  
   **GCP Cloud Infrastructure**: Platform-agnostic cloud services accessible from any environment.
+  
   **SOLID & Design Patterns**: Abstraction principles ensure consistency across platforms.
 
 #### Usability
 
+  
   **N-layer Architecture**: Indirectly affects usability through system responsiveness but doesn't directly address user experience.
+  
   **Flutter Mobile**: Rich UI components and consistent cross-platform experience enhance usability.
+  
   **React Web**: Component-based architecture facilitates creating intuitive interfaces.
+  
   **Firebase Auth**: Provides pre-built, user-friendly authentication flows.
+  
   **Monolithic-MVC with Hybrid REST/GraphQL**: Impacts UI responsiveness but doesn't directly address user experience design.
+  
   **PostgreSQL**: Database choice doesn't directly impact usability.
+  
   **TensorFlow**: ML framework doesn't directly impact user interface usability.
+  
   **GCP Cloud Infrastructure**: Can impact performance and thus indirectly affect usability, but no direct impact on UI/UX.
+  
   **SOLID & Design Patterns**: Can facilitate better code organization but doesn't directly improve end-user experience.
 
 ### Top Functional Requirements
 #### Task Recording
 
   **N-layer Architecture**: Separation of concerns enables efficient recording, processing, and storage of tasks.
+  
   **Flutter Mobile**: Background processing capabilities enable recording voice and screen interactions.
+  
   **React Web**: Supports recording tasks through web interfaces effectively.
+  
   **Firebase Auth**: Provides user identification for recordings but no direct support for the recording functionality.
+  
   **Monolithic-MVC with Hybrid REST/GraphQL**: REST endpoints efficiently handle recording submissions while GraphQL optimizes retrieval.
+  
   **PostgreSQL**: Structured storage for recorded tasks and associated metadata.
+  
   **TensorFlow**: Processes voice recordings and extracts key actions for workflow generation.
+  
   **GCP Cloud Infrastructure**: Cloud storage and processing power for handling recordings.
+  
   **SOLID & Design Patterns**: Factory and Strategy patterns enable flexible recording implementation across platforms.
 
 #### Real-Time Assistance
 
   **N-layer Architecture**: Service layer can efficiently detect tasks and provide assistance.
+  
   **Flutter Mobile**: Supports background monitoring and real-time notifications.
+  
   **React Web**: Supports real-time assistance through responsive UI updates.
+  
   **Firebase Auth**: Ensures only authorized users receive assistance but doesn't provide assistance functionality.
+  
   **Monolithic-MVC with Hybrid REST/GraphQL**: GraphQL subscriptions can enable real-time assistance features.
+  
   **PostgreSQL**: Stores assistance data but may require additional caching for real-time performance.
+  
   **TensorFlow**: AI capabilities identify when users need assistance and generate guidance.
+  
   **GCP Cloud Infrastructure**: Pub/Sub enables real-time event processing for timely assistance.
+  
   **SOLID & Design Patterns**: Observer pattern facilitates event-based assistance triggers.
 
 #### Enterprise & User Management
 
   **N-layer Architecture**: Clear separation allows for comprehensive user and role management.
+  
   **Flutter Mobile**: Provides UI for user management but requires backend integration for enterprise features.
+  
   **React Web**: Similar to Flutter, provides UI but depends on backend for complete enterprise management.
+  
   **Firebase Auth**: Fully supports user authentication, roles, and permissions management.
+  
   **Monolithic-MVC with Hybrid REST/GraphQL**: Facilitates complex user and permission queries required for enterprise management.
+  
   **PostgreSQL**: Relational database well-suited for modeling complex organizational hierarchies and permissions.
+  
   **TensorFlow**: AI framework has no direct role in user management functionality.
+  
   **GCP Cloud Infrastructure**: Provides secure, scalable infrastructure for enterprise user management.
+  
   **SOLID & Design Patterns**: Patterns like Role-Based Access Control can be implemented effectively.
 
 
