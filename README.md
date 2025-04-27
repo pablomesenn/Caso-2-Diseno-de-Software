@@ -366,10 +366,9 @@ Toolkits and standards:
    - Material Design 3 (3.7+): Focus on accessibility and modern design.
    - Apple Human Interface Guidelines (The latest updates on the official Apple Human Interface Guidelines website): To follow iOS standards.
 
-
 ### Object Design Patterns
 
-![UML class (3)](https://github.com/user-attachments/assets/d7fe7242-5131-46d0-ae20-d9c4af49e7a3)
+![image](https://github.com/user-attachments/assets/e135961f-2cff-49f4-9bfc-dc96511aa469)
 
 #### Additional information related to the UML diagram
 
@@ -386,10 +385,6 @@ Simple record processing offers a lightweight workflow of processation (performi
 ### External Services
 ![External Services](https://github.com/user-attachments/assets/3a04f940-356a-4a3c-abd7-304a380bbc00)
 
-### Project Structure
-
-![Captura de pantalla 2025-04-02 213716](https://github.com/user-attachments/assets/287aea21-230b-4085-8635-6742b702287c)
-
 **Authentication & Authorization**
 Service Used: Firebase Authentication
 - Provides secure user authentication via email, phone, and third-party providers (Google, Facebook, etc.).
@@ -402,6 +397,10 @@ Service Used: Firebase Authentication
 - TensorFlow Serving (AI Model): Processes voice commands and generates step-by-step guides.
 - Third-Party Integrations (ERP, SaaS apps, Web apps): Connects with services like SAP, banking apps, Netflix, etc., to guide users through automated tasks.
 - Payment Gateway (Stripe, PayPal): Handles subscriptions and payments for premium plans.
+
+### Project Structure
+
+![Captura de pantalla 2025-04-02 213716](https://github.com/user-attachments/assets/287aea21-230b-4085-8635-6742b702287c)
 
 ### Final FE architecture diagram
 
