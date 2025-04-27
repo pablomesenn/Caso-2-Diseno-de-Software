@@ -1074,52 +1074,16 @@ Additionally the **GitHub Flow** branching policy will be used to manage the bra
 
 #### 4. Event-Driven, Queues, Brokers, Producer/Consumer, Pub/Sub
 
-Below in this section is a detailed explanation on how the architectures named in the title can be applied to the application, along with the proposed cloud services to implement each of the achitectures and a proposal of integration layers with their respective classes.
+| Architecture | Google Cloud Service | Application                                                                                                                 | Integration layer/Classes                                                |
+|--------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| Event Driven | Pub/Sub              | Trigger events automatically when critical actions occur (task recording completion for example).                           | In backend services: EventPublisher, VoiceCommandService                 |
+| Brokers      | Pub/Sub              | 	Act as an intermediary that stores and forwards events between producers and consumers.                                    | PubSubBrokerClient with mehtods like publishMessage() and createTopic(). |
+| Pub/Sub      | Pub/Sub              | Deliver event messages to multiple subscribers that handle business logic (AI processing, notifications, database updates). | PubSubClient, NotificationSubscriber, AnalyticsSubscriber                |
 
-##### a) Event-Driven architecture (Google Cloud Pub/Sub)
-
-When a user completes a voice recording or triggers an action, an event is generated to start downstream processing. For example, after recording a voice command, an event can trigger asynchronous analysis using AI (TensorFlow) and then update the knowledge base or prepare guidance steps.
-
-**BENEFITS**
-
-- Decouples the initiation of an action from its processing.
-- Enables reactive, real-time adjustments and asynchronous workflows. 
-
-##### b) Queues and Producer/Consumer Pattern (Google Cloud Pub/Sub and Google Cloud Tasks)
-
-Some processes, such as processing audio files and running heavy AI computations, can be time-consuming. Instead of blocking the user request, these tasks are added to a queue to be processed later by a dedicated consumer service.
-
-**BENEFITS**
-
-- Improves system responsiveness by offloading heavy or long duration tasks.
-- Enables load leveling so that peaks of incoming requests are buffered (temporarily storing or "buffering" these requests).
-  
-##### c) Brokers and Pub/Sub (Google Cloud Pub/Sub)
-
-Messaging brokers support Pub/Sub systems where an event (like “Task Recorded” or “Workflow Analyzed”) is published, and various subscribers (e.g., logging, analytics, notification services) can react independently. This makes it easier to expand functionalities without tightly coupling components. In a more specific way, the broker (which supports the Publish/Subscribe model), lets the producer publishes an event once and the broker then reliably distributes that event to multiple subscribers. For example, multiple services can subscribe to the “Task Recorded” event and perform different actions (e.g., update the workflow database, trigger notifications, log activity for auditing) without interfering with each other. 
-
-**BENEFITS**
-
-- Scalability and flexibility by allowing multiple services to subscribe to the same events.
-- Centralized message management with robust delivery guarantees.
-
-##### Integration Layers
-
-**Messaging Integration Layer:**
-Contains the EventPublisher and EventSubscriber classes; handles Pub/Sub topics and subscriptions for event-driven processing.
-
-**Queue Integration Layer:**
-Contains the TaskQueueManager class; encapsulates asynchronous task submission using Cloud Tasks. You might also include retry logic and schedule management here.
-
-**Service/Business Layer Integration:**
-Your existing service classes (e.g., ExampleService) will call these messaging utilities to publish events or queue tasks. For example, after processing a voice command, ExampleService will call EventPublisher.publishEvent('voiceCommandTopic', payload) to trigger downstream processing without blocking user interaction.
-
-**Controller/Handler Layer:**
-Handlers (such as API endpoints) receive HTTP requests and delegate to the service layer, which in turn uses the messaging integrations.
 
 #### 5. API Gateway (Security & Scalability)?
 
-An API Gateway will not be used in this project because the application is designed as a single-service architecture. Since all logic and functionality are encapsulated within a single backend service, introducing an API Gateway would add unnecessary complexity and overhead without providing significant benefits. Features commonly handled by an API Gateway—such as request routing between multiple services, load balancing, or service aggregation—are not applicable in this context. As a result, direct communication between the client and the service is sufficient and more efficient for the current scope of the application.
+An API Gateway will not be used because the application follows a single-service architecture. All logic is contained within one backend service, making a gateway unnecessary and adding unwanted complexity. Since features like routing, load balancing, and service aggregation are not needed, direct client-to-service communication is simpler and more efficient.
 
 ### Data Layer Design for Zathura
 
