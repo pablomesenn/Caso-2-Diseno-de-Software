@@ -629,24 +629,13 @@ The original template used console.log() for logging, which is inadequate for pr
 We implemented a Logger interface and a CloudWatchLogger class, utilizing the AWS SDK to send logs to CloudWatch Logs. This adheres to the Strategy pattern, allowing for different logging implementations in the future.
 To extend this further, we've built a comprehensive multi-logger architecture that supports multiple logging destinations simultaneously:
 
-1. We designed an abstract BaseLogger class that defines the common interface for all logger implementations (info(), error(), warn(), etc.)
+We designed an abstract BaseLogger class that defines the common interface for all logger implementations (info(), error(), warn(), etc.)
 
-2. We implemented concrete logger adapters for various logging services:
+We implemented concrete logger adapters for various logging services:
 
   * CloudWatchLogger - for AWS CloudWatch integration
   * ConsoleLogger - for local development and debugging
   * FileLogger - for local file storage of logs
-ElasticsearchLogger - for searchable log analytics
-SentryLogger - for error monitoring and tracking
-
-We created a LoggerFactory that manages logger instances and enables using them individually or collectively:
-javascriptconst loggerFactory = new LoggerFactory();
-loggerFactory.addLogger('cloudwatch', new CloudWatchLogger(cloudwatchConfig));
-loggerFactory.addLogger('console', new ConsoleLogger());
-
-A CompositeLogger allows broadcasting log events to multiple destinations simultaneously:
-javascriptconst logger = loggerFactory.getCompositeLogger();
-logger.error('This error is recorded in all configured logging systems');
 
 Environment-based configuration determines which loggers are active in different deployment contexts.
 
