@@ -47,27 +47,11 @@ Strengths:
 
 - Node.js 20.x: Handles all incoming REST and GrapQL requests. Connects to the PostgreSQL database. Implements general business logic (authentication, user management, file uploads, task creation). Orchestrates calls to external modules like the AI services handled by Python.
 
+- Express 4.x: Web framework for Node.js, used to handle REST and GraphQL APIs efficiently, manage middleware, routing, and request/response lifecycle.
+
 - Python 3.11.x (AI Microservice): AI/ML processing. Processing voice commands, running machine learning models, generating automating tasks based on AI results.  
 
 - REST: For structured, transactional, and service-oriented operations. Authentication and registration, file uploads, calling external services (payment gateways), webhooks, internal microservice communication (between Node.js and Python).
-
-- GraphQL: User-specific data views, avoiding overfetching and underfectching, rich querying for dashboards.
-
-The dual implementation of REST and GraphQL is strategically chosen to optimize different types of operations:
-
-REST API:
-- Authentication and user registration flows
-- File upload functionality
-- Integration with external services (payment gateways)
-- Webhook processing
-- Internal microservice communication between Node.js and Python components
-
-GraphQL:
-- User-specific data views with precise data requirements
-- Elimination of overfetching and underfetching issues
-- Rich querying capabilities for complex dashboard interfaces
-- Streamlined data retrieval for frontend applications
-
 
 **Database:**
 - PostgreSQL 16.x: Chosen for its robust compatibility with the selected technologies.
