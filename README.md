@@ -1021,6 +1021,7 @@ This project is designed for a cloud based infraestructure with serverless compo
   loud-functions 2.4.x: For implementing Google Cloud Functions
 
 #### 3. Service vs Microservice
+
 Considering that Zathura is still in its early stages of development, choosing to implement a **single-service architecture** is a strategic and realistic decision. It enables fast deployment, rapid testing, and simplifies maintenance.
 
 ##### Logical division for workload distribution
@@ -1044,10 +1045,28 @@ The following point are to be applied in the code organization and branching in 
 - **Pull request acceptance policie:** It is mandatory to have at least two approvals before merge
 - **Semantic versioning:** A formal system for assigning version numbers to software. Versions follow the format MAJOR.MINOR.PATCH, where each segment is incremented based on the nature of the changes
 
-Additionally the **GitHub Flow** branching policy will be used to manage the branchs in the code repository.
+Additionally the **GitHub Flow** branching policy will be used to manage the branchs in the code repository. This policy is explained by the 2 next points:
+
+**- Core branch:** main (always deployable)
+
+**- Workflow:** Create a short-lived feature branch off main -> Open a PR, get it reviewed & CI-tested -> Merge into main and deploy immediately
 
 ##### Team collaboration
 
+**1. Shared monorepo for all services**
+
+- Every team member works inside the same repository where each logical service (Auth, User, Recording, etc.) has its own internal module/folder.
+
+**2. Working with branches**
+
+- Branches created by devs are meant to be short-lived. This means PR and approvals as soon as possble.
+- Developers push small, frequent commits and open PRs early to facilitate fast reviews and feedback.
+- Feature branches are created directly from main, named clearly with a prefix + ticket ID
+
+**3. Post PR approval (2 approvals minimum)**
+
+- The PR needs to be merged to main
+- When changes are merged semantic versioning will be applied 
 
 #### 4. Event-Driven, Queues, Brokers, Producer/Consumer, Pub/Sub
 
