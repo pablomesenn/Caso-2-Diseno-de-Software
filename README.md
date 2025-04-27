@@ -419,7 +419,8 @@ Service Used: Firebase Authentication
 ![Captura de pantalla 2025-04-02 213716](https://github.com/user-attachments/assets/287aea21-230b-4085-8635-6742b702287c)
 
 ### Final FE architecture diagram
-
+Link:
+https://miro.com/app/board/uXjVIJ-5CTY=/?share_link_id=38111920359
 ## Backend Design Specifications
 
 ### Proof of Concepts
@@ -1303,6 +1304,8 @@ Indexing strategies will be carefully considered to optimize query performance, 
 *Examples provide clear guidance for developers.
 *The combination of relational (PostgreSQL) and NoSQL (Firestore) databases allows for optimal data storage and retrieval based on specific needs.
 ## Architecture Design
+Link:
+https://miro.com/app/board/uXjVIJ-5CTY=/?share_link_id=38111920359
 
 ## Architecture Compliance Matrix
 
