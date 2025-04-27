@@ -76,7 +76,7 @@ GraphQL:
  
   - Automated Task Generation – Leverages fine-tuned NLP models (BERT/TensorFlow Text) to classify intents and extract entities from text.
 
-  - Deployment: Runs in a Python microservice (FastAPI/gRPC), deployed on GCP for scalability.
+  - Deployment: Runs in a Python microservice, deployed on GCP for scalability.
 
 **Cloud & Hosting:**
 - Google Cloud Platform (GCP): Ensures seamless integration with Firebase and scalable cloud services.
