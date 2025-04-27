@@ -871,36 +871,49 @@ Interfaces with the service layer
 
 ##### How do object design patterns interact with requests or any other trigger
 
-1. Factory Pattern
+1. **Factory Pattern**
+
     Used in the Repository layer to dynamically create appropriate repository instances and triggered during request handling to select the correct data source
-    Classes: `RepositoryFactory` Creates and returns repository implementations such as `PostgresUserRepository`. This allows the system to switch between data sources or configurations dynamically.
-2. Repository Pattern
+
+    `RepositoryFactory` creates and returns repository implementations such as `PostgresUserRepository`. This allows the system to switch between data sources or configurations dynamically.
+2. **Repository Pattern**
+    
     Abstracts data source operations behind interfaces. Allows handlers/services to work with data without knowing storage details. this separation is key for integrating GraphQL resolvers and REST endpoints without duplicating logic.
-    Classes: `UserRepository` (interface) and corresponding implementations gets and creates.
-3. Template Method Pattern
-    Provides a consistent structure for request processing (e.g., authentication → validation → execution → response formatting).Evident in the `BaseHandler` abstract class, defines the skeleton of request handling while allowing subclasses to override specific steps
-      Classes: `BaseHandler` (abstract), extend BaseHandler and implement specific behavior
-                `RestHandler` and `GraphQLHandler` extend BaseHandler, and implement specific request types like HTTP methods vs GraphQL queries/mutations.
-4. Strategy Pattern
+    
+    `UserRepository` (interface) and corresponding implementations gets and creates.
+3. **Template Method Pattern**
+    
+    Provides a consistent structure for request processing (For example: authentication → validation → execution → response formatting).Evident in the `BaseHandler` abstract class, defines the skeleton of request handling while allowing subclasses to override specific steps
+
+      `BaseHandler` (abstract), extend BaseHandler and implement specific behavior.
+      `RestHandler` and `GraphQLHandler` extend BaseHandler, and implement specific request types like HTTP methods vs GraphQL queries/mutations.
+4. **Strategy Pattern**
+
     Applied to middleware components, allowing different processing strategies to be applied to requests
     and supports both optional and mandatory middleware
-    Classes: `MiddlewareStrategy` (interface) it is a contract for all middleware logic.
-              `AuthenticationMiddleware` and `LoggingMiddleware`, or any individual strategies that can be applied independently or in combination.
-              `RequestProcessor`: Executes a chain of middleware strategies before reaching the handler. Useful for both REST routes and GraphQL resolvers.
-5. Dependency Injection
+    
+    `MiddlewareStrategy` (interface) it is a contract for all middleware logic.
+    `AuthenticationMiddleware` and `LoggingMiddleware`, or any individual strategies that can be applied independently or in combination.
+    `RequestProcessor`executes a chain of middleware strategies before reaching the handler. Useful for both REST routes and GraphQL resolvers.
+5. **Dependency Injection**
+
     Services receive repositories through construction. Handlers receive services through construction, and facilitates testing and loose coupling.
     Classes: `UserService` receives a UserRepository (like `PostgresUserRepository`) through its constructor.
-6. Event-Driven Pattern
+6. **Event-Driven Pattern**
+
     After handling synchronous aspects of requests, events are published via Google Cloud Pub/Sub
     These events trigger asynchronous processing for time-consuming operations.
-    Classes:  `EventPublisher` publishes events like `UserSignedUpEvent` after business logic executes.
-              `VoiceCommandService` triggers events when AI commands are processed, decoupling immediate request handling from secondary actions.
-7. Pub/Sub Pattern
+    
+    `EventPublisher` publishes events like `UserSignedUpEvent` after business logic executes.
+    `VoiceCommandService` triggers events when AI commands are processed, decoupling immediate request handling from secondary actions.
+7. **Pub/Sub Pattern**
+
     When certain actions are triggered (like task recording), multiple subscribers can react.
     Allows for extensibility without modifying existing code
-    Classes:  `PubSubClient`: Encapsulates publishing logic to Google Cloud Pub/Sub.
-              `NotificationSubscriber`: Reacts to domain events like UserSignedUpEvent, sending notifications via Google Cloud Messaging.
-              `AnalyticsSubscriber`: Responds to events such as `TaskCompletedEvent`, sending data to Google Cloud Storage or BigQuery for further analysis.
+    
+    `PubSubClient`: Encapsulates publishing logic to Google Cloud Pub/Sub.
+    `NotificationSubscriber`: Reacts to domain events like UserSignedUpEvent, sending notifications via Google Cloud Messaging.
+    `AnalyticsSubscriber`: Responds to events such as `TaskCompletedEvent`, sending data to Google Cloud Storage or BigQuery for further analysis.
 
 This architecture provides a clean separation of concerns, enables efficient request handling, and maintains flexibility for future growth while keeping the system manageable for the current team size and development stage.
 
@@ -1284,69 +1297,63 @@ Indexing strategies will be carefully considered to optimize query performance, 
 #### Scalability
 
   **N-layer Architecture**: 
-  - While the separation of concerns enables some scalability, the monolithic nature may limit horizontal scaling beyond a certain point. 
-  - Even with separation of concerns, everything is still tightly bundled. This causes issues when trying to scale horizontally like adding more machines to handle more load.
+  While the separation of concerns enables some scalability, the monolithic nature may limit horizontal scaling beyond a certain point. 
+  Even with separation of concerns, everything is still tightly bundled. This causes issues when trying to scale horizontally like adding more machines to handle more load.
 
   **Flutter Mobile**: 
-  - Efficient background processing capabilities support handling increased user load without performance degradation.
+  Efficient background processing capabilities support handling increased user load without performance degradation.
   
   **React Web**: 
-  - React's virtual DOM and component architecture enable efficient rendering even with large amounts of data.
+  React's virtual DOM and component architecture enable efficient rendering even with large amounts of data.
   
   **Firebase Auth**: 
-  - Firebase Authentication is designed to handle millions of users with automatic scaling.
+  Firebase Authentication is designed to handle millions of users with automatic scaling.
   
   **Monolithic-MVC with Hybrid REST/GraphQL**: 
-  - GraphQL optimizes data retrieval, reducing bandwidth and enabling selective data fetching for better scaling.
+  GraphQL optimizes data retrieval, reducing bandwidth and enabling selective data fetching for better scaling.
   
   **PostgreSQL**: 
-  - Supports both vertical scaling and read replicas for handling increased load.
+  Supports both vertical scaling and read replicas for handling increased load.
   
   **TensorFlow**: 
-  - Capable of distributed processing and hardware acceleration for scaling machine learning tasks.
+  Capable of distributed processing and hardware acceleration for scaling machine learning tasks.
   
   **GCP Cloud Infrastructure**: 
-  - Provides auto-scaling capabilities for handling the required growth from 900 to 500,000 users.
+  Provides auto-scaling capabilities for handling the required growth from 900 to 500,000 users.
   
   **SOLID & Design Patterns**: 
-  - Promotes loose coupling and high cohesion, facilitating easier scaling and maintenance.
+  Promotes loose coupling and high cohesion, facilitating easier scaling and maintenance.
 
 #### Security
 
   **N-layer Architecture**: 
-  - Provides some security through separation of concerns, but requires additional security measures at each layer.
+  Provides some security through separation of concerns, but requires additional security measures at each layer.
   
   **Flutter Mobile**: 
-  - Offers some built-in security features but requires additional implementation for encryption and secure storage.
+  Offers some built-in security features but requires additional implementation for encryption and secure storage.
   
   **React Web**: 
-  - Similar to Flutter, needs additional security implementations for client-side security.
+  Similar to Flutter, needs additional security implementations for client-side security.
   
   **Firebase Auth**: 
-  - Fully supports 2FA, secure session management, and complies with security standards.
+  Fully supports 2FA, secure session management, and complies with security standards.
   
   **Monolithic-MVC with Hybrid REST/GraphQL**: 
-  - The MVC pattern allows for centralized security controls and GraphQL enables fine-grained access control.
+  The MVC pattern allows for centralized security controls and GraphQL enables fine-grained access control.
   
-  **PostgreSQL**: 
-  - Provides strong data encryption, role-based access control, and audit logging capabilities.
+  **PostgreSQL**: Provides strong data encryption, role-based access control, and audit logging capabilities.
   
-  **TensorFlow**: 
-  - Limited built-in security features; requires additional measures to secure AI/ML pipelines.
+  **TensorFlow**: Limited built-in security features; requires additional measures to secure AI/ML pipelines.
   
-  **GCP Cloud Infrastructure**: 
-  - Offers comprehensive security features including encryption at rest and in transit.
+  **GCP Cloud Infrastructure**: Offers comprehensive security features including encryption at rest and in transit.
   
-  **SOLID & Design Patterns**: 
-  - Design patterns like Strategy for authentication enable flexible security implementation.
+  **SOLID & Design Patterns**: Design patterns like Strategy for authentication enable flexible security implementation.
 
 #### Performance
 
-  **N-layer Architecture**: 
-  - Clean separation enables optimizing each layer independently for performance.
+  **N-layer Architecture**: Clean separation enables optimizing each layer independently for performance.
   
-  **Flutter Mobile**: 
-  - Native-like performance and efficient background processing capabilities.
+  **Flutter Mobile**: Native-like performance and efficient background processing capabilities.
   
   **React Web**: Virtual DOM minimizes DOM operations for responsive UI performance.
   
@@ -1354,11 +1361,11 @@ Indexing strategies will be carefully considered to optimize query performance, 
   
   **Monolithic-MVC with Hybrid REST/GraphQL**: GraphQL optimizes network requests by fetching only needed data.
   
-  **PostgreSQL**: Provides indexing and query optimization for fast data retrieval.
+  **PostgreSQL**: Provides indexing and query optimization for fast data retrieval thanks to redis.
   
   **TensorFlow**: GPU acceleration enables high-performance AI processing without affecting device performance.
   
-  **GCP Cloud Infrastructure**: High-performance compute resources and global CDN ensure fast response times.
+  **GCP Cloud Infrastructure**:High-performance compute resources and global CDN ensure fast response times.
   
   **SOLID & Design Patterns**: Patterns like Repository pattern enable caching and optimized data access.
 
