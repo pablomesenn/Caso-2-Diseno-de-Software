@@ -35,7 +35,10 @@ Strengths:
 - Scalable Cloud Infrastructure – Handles a growing user base efficiently with cloud-based storage and processing.
 - Flexible Monetization Model – Offers free trials and scalable subscription plans for businesses.
 
-## Stack:**
+## Stack:
+
+**Frontend:**
+
 - Mobile: Flutter 3.19.x (Android & iOS) – Ensures efficient background processing and real-time assistance.
 
 - Web: React 18.2.x – Provides high performance and scalability for web interactions.
