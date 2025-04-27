@@ -416,7 +416,8 @@ Service Used: Firebase Authentication
 
 ### Project Structure
 
-![Captura de pantalla 2025-04-02 213716](https://github.com/user-attachments/assets/287aea21-230b-4085-8635-6742b702287c)
+![image](https://github.com/user-attachments/assets/c297222b-b5de-47b9-9c49-350d4dd885c4)
+
 
 ### Final FE architecture diagram
 Link:
