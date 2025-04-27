@@ -627,24 +627,13 @@ The original template used console.log() for logging, which is inadequate for pr
 We implemented a Logger interface and a CloudWatchLogger class, utilizing the AWS SDK to send logs to CloudWatch Logs. This adheres to the Strategy pattern, allowing for different logging implementations in the future.
 To extend this further, we've built a comprehensive multi-logger architecture that supports multiple logging destinations simultaneously:
 
-1. We designed an abstract BaseLogger class that defines the common interface for all logger implementations (info(), error(), warn(), etc.)
+We designed an abstract BaseLogger class that defines the common interface for all logger implementations (info(), error(), warn(), etc.)
 
-2. We implemented concrete logger adapters for various logging services:
+We implemented concrete logger adapters for various logging services:
 
   * CloudWatchLogger - for AWS CloudWatch integration
   * ConsoleLogger - for local development and debugging
   * FileLogger - for local file storage of logs
-ElasticsearchLogger - for searchable log analytics
-SentryLogger - for error monitoring and tracking
-
-We created a LoggerFactory that manages logger instances and enables using them individually or collectively:
-javascriptconst loggerFactory = new LoggerFactory();
-loggerFactory.addLogger('cloudwatch', new CloudWatchLogger(cloudwatchConfig));
-loggerFactory.addLogger('console', new ConsoleLogger());
-
-A CompositeLogger allows broadcasting log events to multiple destinations simultaneously:
-javascriptconst logger = loggerFactory.getCompositeLogger();
-logger.error('This error is recorded in all configured logging systems');
 
 Environment-based configuration determines which loggers are active in different deployment contexts.
 
@@ -1008,64 +997,33 @@ This project is designed for a cloud based infraestructure with serverless compo
   loud-functions 2.4.x: For implementing Google Cloud Functions
 
 #### 3. Service vs Microservice
-Zathura is still an early in development application, taking this into account chosing to implement the single-service architecture is a strategic and realistic decision. This decision is justified by the following reasons:
-
-##### 1. Operational Simplicity
-
-- A single service means one codebase and one deployment pipeline.
-
-- There's no need for complex infrastructure such as service mesh, load balancers, or distributed monitoring.
-
-- It simplifies debugging, testing, and deployments.
-
-##### 2. Faster Development
-
-- Changes to business logic, database structure, or UI can be implemented, tested, and released much faster.
-
-- No communication overhead between distributed components or teams.
-
-##### 3. Cost Efficiency
-
-- Avoids the early cost and infrastructure overhead of managing microservices.
-
-- The team can stay focused on building core features rather than solving distributed system problems prematurely.
-
-##### 4. Sufficient Scalability
-
-- Internal modularity (handlers, services, repositories) ensures code maintainability and room for performance tuning.
-
-- Vertical scaling is feasible for expected traffic in the short term.
-
-- When necessary, you can extract services in the future thanks to the layered architecture already in place.
+Considering that Zathura is still in its early stages of development, choosing to implement a **single-service architecture** is a strategic and realistic decision. It enables fast deployment, rapid testing, and simplifies maintenance.
 
 ##### Logical division for workload distribution
 
-Now, talking about logical distribution, even with a single service, clear internal separation of concerns is crucial to enable effective workload distribution and code scalability. The logical division for workload distribution are:
+Even with a single service, clear internal separation of concerns is crucial to enable effective workload distribution and code scalability. The logical division for workload distribution are:
 
-| Layer         | Responsability                                        |
-|---------------|-------------------------------------------------------|
-| Handlers      | Handle HTTP request and delegate to services          |
-| Services      | Contain business logic and coordinate repositories    |
-| Respositories | Data acces layer (DB, external sources)               |
-| AI/ML Layer   | Voice recognition, workflow generation via TensorFlow |
-| Middleware    | Request parsing, validation, logging, etc..           |
+| Service               | Responsability                                                                            |
+|-----------------------|-------------------------------------------------------------------------------------------|
+| Auth Service          | Handles user authentication, authorization and secure session management                  |
+| User Service          | Manages user profiles, account settings, and user related operations                      |
+| Recording Service     | Captures and controls task recordings from user voice commands and screen interactions    |
+| Processing Service    | Analyze and transforms raw recordings into structured workflows                           |
+| Storage Service       | Stores and retrieves recorded data, processed workflows and  associated metadata securely |
+| Notifications Service | Sends real-time alerts and assitance prompts to user across different channels            |
 
 ##### Code organization
+The following point are to be applied in the code organization and branching in the Zathura project:
 
-For purposes of being in agreement with the logical division set the code organization will be the one described in the following image:
+- **Monorepo:** All packages and services will be kept in a single repository, simplifying versioning control.
+- **Branch and PR naming:** Prefix branch names with type and ticket ID, also PR title are required to be clear in the intent
+- **Pull request acceptance policie:** It is mandatory to have at least two approvals before merge
+- **Semantic versioning:** A formal system for assigning version numbers to software. Versions follow the format MAJOR.MINOR.PATCH, where each segment is incremented based on the nature of the changes
 
-![image](https://github.com/user-attachments/assets/9281a40c-2e92-41d8-851e-7aa8d6c086c5)
+Additionally the **GitHub Flow** branching policy will be used to manage the branchs in the code repository.
 
 ##### Team collaboration
 
-Given the 4-member team, this section describes a practical distribution of roles based on expertise and responsibilities:
-
-| Member        | Main Role                     | Responsabilities                                    |  
-|---------------|-------------------------------|-----------------------------------------------------|
-| Pablo         | Architecture & Core Backend   | Services layer, repository design, logic decoupling |       
-| Alonso        | AI / ML Processing            | TensorFlow integration, voice command workflows     |
-| Ana           | Frontend & Authentication     | Firebase Auth, UI integration (Flutter & React)     |   
-| Jesus         | QA & DevOps                   | GitHub Actions, CI/CD setup, testing strategy       |
 
 #### 4. Event-Driven, Queues, Brokers, Producer/Consumer, Pub/Sub
 
