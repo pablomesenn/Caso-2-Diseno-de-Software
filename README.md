@@ -70,7 +70,15 @@ GraphQL:
 - PostgreSQL 16.x: Chosen for its robust compatibility with the selected technologies.
 
 **AI & Machine Learning:**
-- TensorFlow 2.16.x: Powers voice command processing and automated task generation.
+- TensorFlow 2.16.x (AI Microservice) – Powers two key functions:
+
+  -- Voice Command Processing – Uses TensorFlow with Whisper (ASR) for speech-to-text transcription.
+
+  -- Automated Task Generation – Leverages fine-tuned NLP models (BERT/TensorFlow Text) to classify intents and extract entities from text.
+
+  --Deployment: Runs in a Python microservice (FastAPI/gRPC), deployed on GCP (Cloud Run/GKE) for scalability.
+
+  --Optimizations: TF Lite for mobile edge inference, model caching in GCP, and Redis for frequent query caching.
 
 **Cloud & Hosting:**
 - Google Cloud Platform (GCP): Ensures seamless integration with Firebase and scalable cloud services.
