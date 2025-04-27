@@ -40,7 +40,7 @@ Strengths:
 
 - Web: React 18.2.x – Provides high performance and scalability for web interactions.
 
-**Backend:**
+**Backend:**  
 
 - Node.js 20.x: Handles all incoming REST and GrapQL requests. Connects to the PostgreSQL database. Implements general business logic (authentication, user management, file uploads, task creation). Orchestrates calls to external modules like the AI services handled by Python.
 
@@ -327,17 +327,30 @@ Principles:
   - Interface Segregation: Focused interfaces like `Subscriber` and `RecordInterface`
   - Dependency Inversion: High-level modules depend on abstractions, not details
 2. DRY (Must): Prevents UI code duplication.
-  - Service Classes: `AuthenticationService` or `LoggingService` act as shared services for components
-  - Utility Libraries: `AudioUtils`, `UIHelpers`, `FormatUtils` contain reusable functions
-  - HOCs/Mixins: `withAudioProcessing`, `withAuthentication` to share behavior across components
-  - Context Providers: `ThemeContext`, `UserContext`, `SettingsContext` for shared state
-3. Separation of Concerns (Must): Keeps logic separate from presentation and state management.
-  - Audio Context: `AudioRecorder`, `AudioProcessor`, `SpeechToTextConverter`
-  - User Context: `UserManager`, `ProfileController`, `PreferencesStore`
-  - API Context: `ApiService`, `EndpointManager`, `ResponseHandler`
-  - UI Context: `ThemeManager`, `ResponsiveLayout`, `AnimationController`
-  - Security Context: `EncryptionService`, `AuthGuard`, `PermissionsChecker`
-  - Schedule Context: `TaskScheduler`, `ReminderService`, `CalendarIntegration`
+  - Models should only contain data structures and validation (`UserModel`, `TaskModel`). Keep models independent of UI logic
+  - Services handle external communication with specific domains. Each service has a single responsibility (`VoiceService`, `SubscriptionService`)
+  - Build complex UI from smaller, focused components
+  - Extract hooks when logic appears in multiple components
+3. Separation of Concerns (Must): Logic should be encapsulated in the classes that implement logic only so that they are not mixed or repeated.
+
+    **Task Recording**: `RecordingService`, `BackgroundRecordingService`
+    Encapsulates task recording logic using voice commands and background action capture.
+
+    **Data Processing**: `TaskProcessingService`, `AIModelService`
+    Processes recordings to extract key steps and trains an AI model to replicate and explain tasks.
+
+    **Real-Time Assistance**: `AssistanceService`, `TaskGuideService`
+    Detects when a user needs help with a task and provides step-by-step assistance within the application.
+
+    **User Interface**: `UIService`, `TaskManagementUIService`
+    Manages the interface logic for recording, editing, and reviewing tasks, and makes it easy to search for recorded tasks.
+
+    **Company and User Management**: `UserManagementService`, `RoleManagementService`, `CompanyService`
+    Handles account creation, task management by company, and user roles (admin, editor, basic user).
+
+    **Plans and Monetization**: `SubscriptionService`, `BillingService`
+    Manage payment plans, recurring billing, and subscriptions, including assigning recorded tasks by company.
+
 4. Tailwind CSS Implementation Principles:
   - Utility-First: Compose designs directly in markup using predefined utility classes
   - Component Extraction: Extract repeated utility patterns into component classes using `@apply`
@@ -349,13 +362,7 @@ Principles:
   - Responsive Design (Must): 
     - Uses Flexbox and CSS Grid in React and MediaQuery in Flutter to ensure responsiveness.
     - Material Design for Android (since Flutter natively supports Material) and Web. Apple HIG for iOS.
-5. Service-Oriented Architecture Elements:
-  - `DataTransformer` provides data transformation services across the application
-  - `StateManager` offers centralized state management services to components
-  - `EventBus` serves as a message broker between decoupled components
-  - `CacheController` provides caching services to improve performance
-  - The `TaskManager` class functions as a service provider for multiple components while maintaining a single point of coordination
-   
+
 Toolkits and standards:
 1. UI Components  
    - Web (React): Tailwind CSS
@@ -870,7 +877,6 @@ Interfaces with the service layer
 2. Repository Pattern
     Abstracts data source operations behind interfaces. Allows handlers/services to work with data without knowing storage details. this separation is key for integrating GraphQL resolvers and REST endpoints without duplicating logic.
     Classes: `UserRepository` (interface) and corresponding implementations gets and creates.
-
 3. Template Method Pattern
     Provides a consistent structure for request processing (e.g., authentication → validation → execution → response formatting).Evident in the `BaseHandler` abstract class, defines the skeleton of request handling while allowing subclasses to override specific steps
       Classes: `BaseHandler` (abstract), extend BaseHandler and implement specific behavior
