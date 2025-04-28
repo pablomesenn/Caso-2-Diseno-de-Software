@@ -1247,6 +1247,8 @@ Appropriate data types will be used for each column to optimize storage and perf
 
 Indexing strategies will be carefully considered to optimize query performance, particularly for frequently accessed data and join operations.
 
+![image](https://github.com/user-attachments/assets/0c4d33b5-1b8d-4d68-9c1f-5ebe3ef6ee50)
+
 **Benefits:**
 
 *Normalized schema ensures data integrity and reduces redundancy.
